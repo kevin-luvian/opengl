@@ -117,6 +117,9 @@ void Screen::run(std::function<void()> onCreate, std::function<void()> onDraw)
     {
         BENCHMARK_PROFILE_NAME("DRAW_LOOP");
 
+        // print fps
+        util::fps();
+
         // handle user input
         glfwPollEvents();
 

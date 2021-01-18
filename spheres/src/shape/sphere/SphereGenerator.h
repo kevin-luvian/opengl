@@ -8,13 +8,13 @@ private:
     unsigned int numX, numY;
 
     // push three point to vertices
-    void pushVertex(int start, float p1, float p2, float p3);
+    void pushVertex(int &offset, float p1, float p2, float p3);
 
     // push three point to indices
-    void pushIndice(int start, unsigned int p1, unsigned int p2, unsigned int p3);
+    void pushIndice(int &offset, unsigned int p1, unsigned int p2, unsigned int p3);
 
     // append top and bottom indices case
-    void appendIPoint(int pIndex, int vIndex, int iOffset);
+    void appendIPoint(int &offset, int pIndex, int vIndex);
 
     // return total count of vertices
     unsigned int vCount();
@@ -27,12 +27,6 @@ public:
 
     // Populate indices and move its ownership
     std::unique_ptr<unsigned int[]> generateIndices();
-
-    // Print vertices array
-    void printV();
-
-    // Print indices array
-    void printI();
 
     // return array size of vertices
     unsigned int vSize();

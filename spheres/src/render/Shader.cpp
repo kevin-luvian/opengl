@@ -1,11 +1,5 @@
 #include "Shader.h"
 
-Shader::Shader()
-{
-    programID = 0;
-    mvpID = 0;
-}
-
 Shader::~Shader()
 {
     clear();
@@ -20,30 +14,13 @@ void Shader::clear()
     if (programID != 0)
         glDeleteProgram(programID);
     programID = 0;
-    mvpID = 0;
 }
 
 GLuint Shader::getProgramID() { return programID; }
 
-GLuint Shader::getMVPID() { return mvpID; }
-
-void Shader::setMVP(glm::mat4 mvp)
+void Shader::setMat4(const char *name, const glm::mat4 &mat) const
 {
-    glUniformMatrix4fv(mvpID, 1, GL_FALSE, glm::value_ptr(mvp));
-}
-
-GLuint Shader::getViewProjection() { return viewProjectionID; }
-
-void Shader::setViewProjection(glm::mat4 matrix)
-{
-    glUniformMatrix4fv(viewProjectionID, 1, GL_FALSE, glm::value_ptr(matrix));
-}
-
-GLuint Shader::getModel() { return modelID; }
-
-void Shader::setModel(glm::mat4 matrix)
-{
-    glUniformMatrix4fv(modelID, 1, GL_FALSE, glm::value_ptr(matrix));
+    glUniformMatrix4fv(glGetUniformLocation(programID, name), 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 void Shader::compileShader(const char *vCode, const char *fCode)
@@ -78,10 +55,6 @@ void Shader::compileShader(const char *vCode, const char *fCode)
         printf("Error validating program: '%s'\n", eLog);
         return;
     }
-
-    mvpID = glGetUniformLocation(programID, "mvp");
-
-    viewProjectionID = glGetUniformLocation(programID, "viewProjection");
 }
 
 void Shader::addShader(const char *shaderCode, GLenum shaderType)

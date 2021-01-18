@@ -3,7 +3,6 @@
 #include <functional>
 #include <string.h>
 
-#include "util/Benchmark.h"
 #include "ScreenState.h"
 #include "Camera.h"
 

@@ -17,6 +17,7 @@ void Camera::initiate()
     yaw = -90.0f;
     pitch = 0.0f;
     worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    updateValues();
 }
 
 void Camera::checkKeys()

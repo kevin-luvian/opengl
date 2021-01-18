@@ -2,24 +2,25 @@
 #include "shape/pyramid/Pyramid.h"
 #include "shape/sphere/SpherePool.h"
 
-Pyramid p;
-SpherePool pool(5000, 25);
+static int TEST_SIZE = 5000;
+static int TEST_COUNT = 50;
+
+SpherePool pool(10000, 15);
 
 void onCreate()
 {
     BENCHMARK_PROFILE();
-    // p.create();
-
     pool.create();
 }
 
 void onDraw()
 {
     BENCHMARK_PROFILE();
-    // p.update();
-    // p.draw();
-
-    // pool.update();
+    if (ScreenState::KeyState()[GLFW_KEY_0])
+    {
+        ScreenState::KeyState()[GLFW_KEY_0] = false;
+        pool.recreateModels();
+    }
     pool.draw();
 }
 

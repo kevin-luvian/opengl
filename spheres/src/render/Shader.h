@@ -6,7 +6,7 @@
 class Shader
 {
 public:
-    Shader();
+    Shader() {}
     ~Shader();
 
     // return shader program ID
@@ -24,16 +24,8 @@ public:
     // clear opengl shader program
     void clear();
 
-    // pass in value to fragment uniform 'mvp'
-    void setMVP(glm::mat4 mvp);
-
-    GLuint getViewProjection();
-
-    void setViewProjection(glm::mat4 matrix);
-
-    GLuint getModel();
-
-    void setModel(glm::mat4 matrix);
+    // set uniform of matrix 4x4
+    void setMat4(const char *name, const glm::mat4 &mat) const;
 
     // create shaders from file
     void compileFromFile(const char *vPath, const char *fPath);
@@ -42,7 +34,7 @@ public:
     void compileShader(const char *vCode, const char *fCode);
 
 private:
-    GLuint programID, mvpID, viewProjectionID, modelID;
+    GLuint programID;
 
     // add shader to opengl state
     void addShader(const char *shaderCode, GLenum shaderType);

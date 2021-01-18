@@ -38,7 +38,7 @@ void Pyramid::update()
 {
     // offset
     mOffset += 0.001f;
-    mAngle += 1.0f;
+    mAngle = std::fmod(mAngle + 1.0f, 360.0f);
     // sSize += 0.001f;
 
     // reset to identity matrix
@@ -55,7 +55,7 @@ void Pyramid::update()
 void Pyramid::draw()
 {
     mShader->bind();
-    mShader->setMVP(mvp);
+    mShader->setMat4("mvp", mvp);
     mMesh->drawDefault();
     mShader->unbind();
 }

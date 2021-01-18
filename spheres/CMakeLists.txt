@@ -12,6 +12,7 @@ set(SOURCE_FILES
     src/glcomponent/Camera.cpp
     src/glcomponent/Screen.cpp
     src/render/Mesh.cpp
+    src/render/InstancedMesh.cpp
     src/render/Shader.cpp
     src/shape/pyramid/Pyramid.cpp
     src/shape/sphere/SpherePool.cpp
