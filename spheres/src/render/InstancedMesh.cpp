@@ -1,12 +1,6 @@
 #include "InstancedMesh.h"
 
-InstancedMesh::InstancedMesh()
-{
-    VAO = 0;
-    VBO = 0;
-    IBO = 0;
-    INSTANCE_BO = 0;
-}
+InstancedMesh::InstancedMesh() { resetValues(); }
 
 InstancedMesh::~InstancedMesh() { clear(); }
 
@@ -18,6 +12,13 @@ void InstancedMesh::clear()
         glDeleteBuffers(1, &VBO);
     if (IBO != 0)
         glDeleteBuffers(1, &IBO);
+    if (INSTANCE_BO != 0)
+        glDeleteBuffers(1, &INSTANCE_BO);
+    resetValues();
+}
+
+void InstancedMesh::resetValues()
+{
     VAO = 0;
     VBO = 0;
     IBO = 0;
@@ -57,7 +58,7 @@ void InstancedMesh::draw(AttributePayload &payload)
 
 void InstancedMesh::create(AttributePayload &payload)
 {
-    // generate vertex array
+    // generate vertex array object
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
@@ -73,29 +74,25 @@ void InstancedMesh::create(AttributePayload &payload)
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
-    // generate colors buffer
+    // generate instance buffer
     glGenBuffers(1, &INSTANCE_BO);
     glBindBuffer(GL_ARRAY_BUFFER, INSTANCE_BO);
     glBufferData(GL_ARRAY_BUFFER, payload.getInstancesSize(), payload.instances.get(), GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(1);
+
+    // color layout=1
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, payload.getInstancesTypeSize(), (void *)offsetof(InstanceAttr, color));
     glVertexAttribDivisor(1, 1);
 
-    glEnableVertexAttribArray(2);
+    // position layout=2
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, payload.getInstancesTypeSize(), (void *)offsetof(InstanceAttr, position));
     glVertexAttribDivisor(2, 1);
 
-    // generate models buffer
-    // glGenBuffers(layoutModelPos, &MODEL_VB);
-    // glBindBuffer(GL_ARRAY_BUFFER, MODEL_VB);
-    // glBufferData(GL_ARRAY_BUFFER, payload.getModelSize(), payload.models.get(), GL_DYNAMIC_DRAW);
-
+    // model layout=3, 4, 5, 6
     int layoutModelPos = 3;
     std::size_t offset = offsetof(InstanceAttr, model);
     std::size_t vec4Size = sizeof(glm::vec4);
     for (int i = 0; i < 4; i++)
     {
-        glEnableVertexAttribArray(layoutModelPos + i);
         glVertexAttribPointer(layoutModelPos + i, 4, GL_FLOAT, GL_FALSE, payload.getInstancesTypeSize(), (void *)(offset + (i * vec4Size)));
         glVertexAttribDivisor(layoutModelPos + i, 1);
     }

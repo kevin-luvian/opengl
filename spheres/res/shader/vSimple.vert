@@ -2,7 +2,7 @@
 
 layout(location = 0) in vec3 pos;
 
-out vec4 fColor;
+flat out vec4 fColor;
 
 uniform mat4 mvp;
 

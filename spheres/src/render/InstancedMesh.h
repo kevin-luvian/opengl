@@ -3,7 +3,13 @@
 #include "glcomponent/ScreenState.h"
 #include "Mesh.h"
 #include "Shader.h"
-#include "InstanceAttr.h"
+
+struct InstanceAttr
+{
+    glm::vec4 color;
+    glm::vec3 position;
+    glm::mat4 model;
+};
 
 struct AttributePayload
 {
@@ -40,7 +46,10 @@ public:
     // draw elements using glDrawElementsInstanced
     void draw(AttributePayload &payload);
 
-    // clear opengl VAO, VBO, and IBO state and reset all value
+    // reset all value
+    void resetValues();
+
+    // clear opengl buffers state and reset all value
     void clear();
 
     // create buffers using default attrib pointer
