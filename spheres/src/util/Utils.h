@@ -77,4 +77,17 @@ namespace util
         }
         std::cout << "\n";
     }
+
+    static long DivideLong(long value, long divider)
+    {
+        long res = value / divider;
+        if (std::abs(value) % divider > divider / 2)
+        {
+            if (value < 0)
+                res -= 1;
+            else
+                res += 1;
+        }
+        return res;
+    }
 } // namespace util

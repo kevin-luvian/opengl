@@ -13,5 +13,5 @@ uniform mat4 transform;
 void main()
 {
 	fColor = vec4(clamp(vertex, 0.0f, 1.0f), 1.0f) + color;
-	gl_Position = viewProjection * (model * vec4(vertex, 1.0) + vec4(position, 1.0));
+	gl_Position = viewProjection * (transform * model * vec4(vertex, 1.0) + vec4(position, 1.0));
 }

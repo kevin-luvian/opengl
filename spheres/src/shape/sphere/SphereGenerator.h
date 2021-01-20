@@ -1,5 +1,16 @@
 #pragma once
 
+#include "render/InstanceAttr.h"
+#include "randoms/RGEN.h"
+
+struct SphereInstanceInput
+{
+    unsigned int sphereCount;
+    double posRange;
+    double minScale;
+    double maxScale;
+};
+
 class SphereGenerator
 {
 private:
@@ -33,4 +44,7 @@ public:
 
     // return array size of indices
     unsigned int iSize();
+
+    // return instances attribute randomly generated
+    std::unique_ptr<InstanceAttr[]> generateSphereInstances(SphereInstanceInput inp);
 };

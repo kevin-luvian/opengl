@@ -97,8 +97,9 @@ void Screen::run(std::function<void()> onCreate, std::function<void()> onDraw)
         return;
     }
 
-    // remove mouse cursor
-    glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // hide mouse cursor
+    if (ScreenState::HideCursor())
+        glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // bind window with screen obj
     glfwSetWindowUserPointer(mWindow, this);

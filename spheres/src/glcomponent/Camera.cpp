@@ -53,6 +53,10 @@ void Camera::checkKeys()
     {
         pos -= worldUp * velocity;
     }
+    if (autoMoveForward)
+    {
+        pos += camFront * velocity;
+    }
 }
 
 void Camera::mouseMove(float x, float y)
@@ -86,6 +90,7 @@ void Camera::updateValues()
     camFront = glm::normalize(camFront);
 
     camRight = glm::normalize(glm::cross(camFront, worldUp));
+    camUp = glm::cross(camRight, camFront);
 }
 
 void Camera::updateScreenSize()
@@ -97,7 +102,6 @@ void Camera::updateScreenSize()
 
 glm::mat4 Camera::getViewProjection()
 {
-    glm::vec3 camUp = glm::cross(camRight, camFront);
     glm::mat4 view = glm::lookAt(pos, pos + camFront, camUp);
     return projection * view;
 }

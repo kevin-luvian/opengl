@@ -3,28 +3,8 @@
 #include "glcomponent/ScreenState.h"
 #include "Mesh.h"
 #include "Shader.h"
-
-struct InstanceAttr
-{
-    glm::vec4 color;
-    glm::vec3 position;
-    glm::mat4 model;
-};
-
-struct AttributePayload
-{
-    std::unique_ptr<unsigned int[]> indices;
-    std::unique_ptr<float[]> vertices;
-    std::unique_ptr<InstanceAttr[]> instances;
-    unsigned int indicesCount, verticesCount, instancesCount;
-
-    unsigned int getIndicesSize() { return indicesCount * getIndicesTypeSize(); }
-    unsigned int getIndicesTypeSize() { return sizeof(unsigned int); }
-    unsigned int getVerticesSize() { return verticesCount * getVerticesTypeSize(); }
-    unsigned int getVerticesTypeSize() { return sizeof(float); }
-    unsigned int getInstancesSize() { return instancesCount * getInstancesTypeSize(); }
-    unsigned int getInstancesTypeSize() { return sizeof(InstanceAttr); }
-};
+#include "InstanceAttr.h"
+#include "AttributePayload.h"
 
 // Holds attributes and ID for vertex and vertex buffer in openGl state
 class InstancedMesh

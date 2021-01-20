@@ -37,12 +37,12 @@ void InstancedMesh::bind()
 
 void InstancedMesh::unbind()
 {
+    glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     for (int i = 0; i < LAYOUT_COUNT; i++)
     {
         glDisableVertexAttribArray(i);
     }
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
 }
 
 void InstancedMesh::draw(AttributePayload &payload)
@@ -99,8 +99,7 @@ void InstancedMesh::create(AttributePayload &payload)
 
     // reset
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    unbind();
 }
 
 void InstancedMesh::recreateInstance(AttributePayload &payload)

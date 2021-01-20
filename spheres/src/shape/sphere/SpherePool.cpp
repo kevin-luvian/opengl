@@ -62,10 +62,11 @@ std::unique_ptr<InstanceAttr[]> SpherePool::generateSphereInstances() const
     float x = 0.0f;
     for (int i = 0; i < mSize; i++)
     {
+        // RGEN::Seed(i);
         tempPos = glm::vec3(x, 0.0f, x);
         temp.color = generateRandomColor();
-        temp.position = tempPos;
-        // temp.position = generateRandomPosition();
+        // temp.position = tempPos;
+        temp.position = generateRandomPosition();
         temp.model = generateRandomModel(tempPos);
         instances[i] = temp;
         x += 7.0f;
@@ -128,6 +129,8 @@ void SpherePool::recreateModels()
 {
     BENCHMARK_PROFILE();
     std::cout << "recreating models" << std::endl;
+    RGEN::SuperSeed(RGEN::Random());
+    // RGEN::SuperSeed("KAT");
     payload.instances = generateSphereInstances();
 
     mMesh->recreateInstance(payload);

@@ -5,8 +5,17 @@
 
 class Shader
 {
+private:
+    GLuint programID;
+
+    // add shader to opengl state
+    void addShader(const char *shaderCode, GLenum shaderType);
+
+    // read from filepath and pass data to content
+    void readFile(const char *filepath, std::string *content);
+
 public:
-    Shader() {}
+    Shader() { programID = 0; }
     ~Shader();
 
     // return shader program ID
@@ -32,13 +41,4 @@ public:
 
     // create shaders from chars
     void compileShader(const char *vCode, const char *fCode);
-
-private:
-    GLuint programID;
-
-    // add shader to opengl state
-    void addShader(const char *shaderCode, GLenum shaderType);
-
-    // read from filepath and pass data to content
-    void readFile(const char *filepath, std::string *content);
 };

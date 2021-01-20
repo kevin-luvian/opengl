@@ -84,6 +84,26 @@ std::unique_ptr<unsigned int[]> SphereGenerator::generateIndices()
     return std::move(mIndices);
 }
 
+std::unique_ptr<InstanceAttr[]> SphereGenerator::generateSphereInstances(SphereInstanceInput inp)
+{
+    auto instances = std::make_unique<InstanceAttr[]>(inp.sphereCount);
+    InstanceAttr temp;
+    // glm::vec3 tempPos;
+    // float x = 0.0f;
+    for (int i = 0; i < inp.sphereCount; i++)
+    {
+        // RGEN::Seed(i);
+        // tempPos = glm::vec3(x, 0.0f, x);
+        temp.color = RGEN::RandomColor();
+        // temp.position = tempPos;
+        temp.position = RGEN::RandomPosition(inp.posRange);
+        temp.model = RGEN::RandomModel(inp.minScale, inp.maxScale);
+        instances[i] = temp;
+        // x += 7.0f;
+    }
+    return instances;
+}
+
 unsigned int SphereGenerator::vCount() { return vSize() / 3; }
 unsigned int SphereGenerator::vSize() { return 3 * ((numX * (numY - 2)) + 2); }
 unsigned int SphereGenerator::iSize() { return 3 * (numY - 2) * 2 * numX; }

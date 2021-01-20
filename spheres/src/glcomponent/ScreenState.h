@@ -17,10 +17,12 @@ public:
     }
     static unsigned int Width() { return GET().mWidth; }
     static unsigned int Height() { return GET().mHeight; }
+    static bool HideCursor() { return GET().hideCursor; }
 
 private:
     bool keyState[1024];
     unsigned int mWidth, mHeight;
+    bool hideCursor = true;
 
     ScreenState() {}
 };

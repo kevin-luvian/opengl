@@ -13,7 +13,7 @@ private:
 
 public:
     Screen(int width, int height);
-    Screen() : Screen(800, 500){};
+    Screen() : Screen(1000, 600){};
     void run(std::function<void()> onCreate, std::function<void()> onDraw);
 
 private:
