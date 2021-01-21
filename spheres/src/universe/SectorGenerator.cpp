@@ -1,30 +1,14 @@
 #include "SectorGenerator.h"
 
-void SectorGenerator::CombineSectors(SectorArray &target, SectorArray &source, long offset, long moveSize)
+DetailedArray<Sector> SectorGenerator::GenerateSurroundingActiveSectors(Sector center, unsigned int total, double limit, double sectorSize, unsigned int starProbability)
 {
-    for (long i = 0; i < moveSize; i++)
-    {
-        target.sectors[offset + i] = source.sectors[i];
-    }
-}
-
-void SectorGenerator::CombineSectors(SectorArray &target, SectorArray &source, long offset)
-{
-    // for (long i = 0; i < source.size; i++)
-    // {
-    //     target.sectors[offset + i] = source.sectors[i];
-    // }
-    CombineSectors(target, source, offset, source.size);
-}
-
-SectorArray SectorGenerator::GenerateSurroundingActiveSectors(Sector center, unsigned int total, double limit, double sectorSize, unsigned int starProbability)
-{
-    SectorArray activeSectors;
-    activeSectors.sectors = std::make_unique<Sector[]>(total);
+    BENCHMARK_PROFILE();
+    DetailedArray<Sector> activeSectors;
+    activeSectors.data = std::make_unique<Sector[]>(total);
     activeSectors.size = total;
 
     unsigned int bound = 0;
-    SectorArray sectorsToVisit = GenerateSurroundingSectors(bound++);
+    DetailedArray<Sector> sectorsToVisit = GenerateSurroundingSectors(bound++);
 
     Sector currentSector;
     unsigned int activeSectorCount = 0;
@@ -33,105 +17,81 @@ SectorArray SectorGenerator::GenerateSurroundingActiveSectors(Sector center, uns
     {
         if (activeSectorCount == total)
             break;
-        currentSector = sectorsToVisit.sectors[stvCounter];
+        currentSector = sectorsToVisit[stvCounter++];
         currentSector.appendPos(center.x, center.y, center.z);
         if (RGEN::NoUpdateRandom(currentSector.seed(), 0, starProbability) == 0)
         {
-            activeSectors.sectors[activeSectorCount++] = currentSector;
+            activeSectors[activeSectorCount++] = currentSector;
         }
-        stvCounter++;
         if (stvCounter == sectorsToVisit.size)
         {
             stvCounter = 0;
             sectorsToVisit = GenerateSurroundingSectors(bound++);
         }
     }
-    SectorArray res;
-    res.sectors = std::make_unique<Sector[]>(activeSectorCount);
-    res.size = activeSectorCount;
-    CombineSectors(res, activeSectors, 0, activeSectorCount);
+    DetailedArray<Sector> res;
+    res.make_empty(activeSectorCount);
+    res.insert(activeSectors);
     // std::cout << "active sectors found: " << activeSectorCount << std::endl;
     return res;
 }
 
-SectorArray SectorGenerator::GenerateSurroundingSectors(long bound)
+DetailedArray<Sector> SectorGenerator::GenerateSurroundingSectors(long bound)
 {
     if (bound == 0)
     {
-        SectorArray res;
-        res.sectors = std::make_unique<Sector[]>(1);
-        res.sectors[0] = {0.0, 0.0, 0.0};
-        res.size = 1;
+        DetailedArray<Sector> res;
+        res.make_empty(1);
+        res[0] = {0.0, 0.0, 0.0};
         return res;
     }
 
     long totalSize = std::pow(2 * bound + 1, 3) - std::pow(2 * bound - 1, 3);
     long offset = 0;
 
-    SectorArray res;
-    res.sectors = std::make_unique<Sector[]>(totalSize);
-    res.size = totalSize;
+    DetailedArray<Sector> sectors;
+    sectors.make_empty(totalSize);
 
-    SectorArray topBottomSectors = GenerateTopBottomSurroundingSectors(bound);
-    CombineSectors(res, topBottomSectors, offset);
-    offset += topBottomSectors.size;
+    GenerateTopBottomSurroundingSectors(sectors, bound, offset);
 
     long segSize = bound - 1;
     for (long y = -segSize; y <= segSize; y++)
     {
-        SectorArray temp = GenerateHorizontalSectors(bound, y);
-        CombineSectors(res, temp, offset);
-        offset += temp.size;
+        GenerateHorizontalSectors(sectors, bound, y, offset);
     }
 
-    return res;
+    return sectors;
 }
 
-SectorArray SectorGenerator::GenerateTopBottomSurroundingSectors(long bound)
+void SectorGenerator::GenerateTopBottomSurroundingSectors(DetailedArray<Sector> &target, long bound, long &offset)
 {
-    SectorArray res;
-    uint32_t count = 0;
-    long segCount = (bound * 2 + 1);
-    long totalCount = 2 * segCount * segCount;
-    std::unique_ptr<Sector[]> sectors = std::make_unique<Sector[]>(totalCount);
     for (const long &y : {-bound, bound})
     {
         for (long x = -bound; x <= bound; x++)
         {
             for (long z = -bound; z <= bound; z++)
             {
-                sectors[count++] = {x + 0.0, y + 0.0, z + 0.0};
+                target[offset++] = {x + 0.0, y + 0.0, z + 0.0};
             }
         }
     }
-    res.sectors = std::move(sectors);
-    res.size = totalCount;
-    return res;
 }
 
-SectorArray SectorGenerator::GenerateHorizontalSectors(long bound, long y)
+void SectorGenerator::GenerateHorizontalSectors(DetailedArray<Sector> &target, long bound, long y, long &offset)
 {
-    SectorArray res;
-    long segCount = (bound * 2 + 1);
-    long totalCount = 2 * segCount + 2 * (segCount - 2);
-    std::unique_ptr<Sector[]> sectors = std::make_unique<Sector[]>(totalCount);
-    long count = 0;
     for (long z = -bound; z <= bound; z++)
     {
         if (z == -bound || z == bound)
         {
             for (long x = -bound; x <= bound; x++)
             {
-                sectors[count++] = {x + 0.0, y + 0.0, z + 0.0};
+                target[offset++] = {x + 0.0, y + 0.0, z + 0.0};
             }
         }
         else
         {
-            sectors[count++] = {-bound + 0.0, y + 0.0, z + 0.0};
-            sectors[count++] = {bound + 0.0, y + 0.0, z + 0.0};
+            target[offset++] = {-bound + 0.0, y + 0.0, z + 0.0};
+            target[offset++] = {bound + 0.0, y + 0.0, z + 0.0};
         }
     }
-    res.sectors = std::move(sectors);
-    res.size = totalCount;
-    return res;
 }

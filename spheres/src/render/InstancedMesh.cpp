@@ -45,18 +45,18 @@ void InstancedMesh::unbind()
     }
 }
 
-void InstancedMesh::draw(AttributePayload &payload)
+void InstancedMesh::draw(SphereAttribute &attr, DetailedArray<InstanceAttr> &instances)
 {
     bind();
     bool *keys = ScreenState::KeyState();
     if (keys[GLFW_KEY_TAB])
-        glDrawElementsInstanced(GL_LINE_STRIP, payload.indicesCount, GL_UNSIGNED_INT, 0, payload.instancesCount);
+        glDrawElementsInstanced(GL_LINE_STRIP, attr.indices.size, GL_UNSIGNED_INT, 0, instances.size);
     else
-        glDrawElementsInstanced(GL_TRIANGLES, payload.indicesCount, GL_UNSIGNED_INT, 0, payload.instancesCount);
+        glDrawElementsInstanced(GL_TRIANGLES, attr.indices.size, GL_UNSIGNED_INT, 0, instances.size);
     unbind();
 }
 
-void InstancedMesh::create(AttributePayload &payload)
+void InstancedMesh::create(SphereAttribute &attr, DetailedArray<InstanceAttr> &instances)
 {
     // generate vertex array object
     glGenVertexArrays(1, &VAO);
@@ -65,26 +65,26 @@ void InstancedMesh::create(AttributePayload &payload)
     // generate indices/elements buffer
     glGenBuffers(1, &IBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, payload.getIndicesSize(), payload.indices.get(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, attr.indices.byte_size(), attr.indices.data.get(), GL_STATIC_DRAW);
 
     // generate vertex buffer
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, payload.getVerticesSize(), payload.vertices.get(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, attr.vertices.byte_size(), attr.vertices.data.get(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
     // generate instance buffer
     glGenBuffers(1, &INSTANCE_BO);
     glBindBuffer(GL_ARRAY_BUFFER, INSTANCE_BO);
-    glBufferData(GL_ARRAY_BUFFER, payload.getInstancesSize(), payload.instances.get(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, instances.byte_size(), instances.data.get(), GL_DYNAMIC_DRAW);
 
     // color layout=1
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, payload.getInstancesTypeSize(), (void *)offsetof(InstanceAttr, color));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, instances.type_size(), (void *)offsetof(InstanceAttr, color));
     glVertexAttribDivisor(1, 1);
 
     // position layout=2
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, payload.getInstancesTypeSize(), (void *)offsetof(InstanceAttr, position));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, instances.type_size(), (void *)offsetof(InstanceAttr, position));
     glVertexAttribDivisor(2, 1);
 
     // model layout=3, 4, 5, 6
@@ -93,7 +93,7 @@ void InstancedMesh::create(AttributePayload &payload)
     std::size_t vec4Size = sizeof(glm::vec4);
     for (int i = 0; i < 4; i++)
     {
-        glVertexAttribPointer(layoutModelPos + i, 4, GL_FLOAT, GL_FALSE, payload.getInstancesTypeSize(), (void *)(offset + (i * vec4Size)));
+        glVertexAttribPointer(layoutModelPos + i, 4, GL_FLOAT, GL_FALSE, instances.type_size(), (void *)(offset + (i * vec4Size)));
         glVertexAttribDivisor(layoutModelPos + i, 1);
     }
 
@@ -102,10 +102,10 @@ void InstancedMesh::create(AttributePayload &payload)
     unbind();
 }
 
-void InstancedMesh::recreateInstance(AttributePayload &payload)
+void InstancedMesh::recreateInstance(DetailedArray<InstanceAttr> &instances)
 {
     glBindBuffer(GL_ARRAY_BUFFER, INSTANCE_BO);
-    glBufferData(GL_ARRAY_BUFFER, payload.getInstancesSize(), payload.instances.get(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, instances.byte_size(), instances.data.get(), GL_DYNAMIC_DRAW);
 
     // reset
     glBindBuffer(GL_ARRAY_BUFFER, 0);

@@ -1,67 +1,56 @@
 #include "StarPool.h"
 
+static std::mutex generate_task_mutex;
+static const int thread_limit = 3;
+static int thread_count = 0;
+
+static const glm::vec3 rotation1 = glm::vec3(1.0f, 0.0f, 0.0f);
+static const glm::vec3 rotation2 = glm::vec3(0.0f, 1.0f, 0.0f);
+static const glm::vec3 rotation3 = glm::vec3(0.0f, 0.0f, 1.0f);
+// static const glm::vec3 rotation2 = glm::vec3(RGEN::Double(), RGEN::Double(), RGEN::Double());
+// static const glm::vec3 rotation3 = glm::vec3(RGEN::Double(), RGEN::Double(), RGEN::Double());
+
 StarPool::StarPool()
 {
-    auto UC = UniverseController::GET();
-    auto totalRatio = UniverseController::TotalQualityRatio();
+    hStars.size = UniverseState::StarCount[2];
+    mStars.size = UniverseState::StarCount[1];
+    lStars.size = UniverseState::StarCount[0];
 
-    hStars.size = UC.StarQualityRatio[0] / totalRatio * (float)UC.StarCount;
-    mStars.size = UC.StarQualityRatio[1] / totalRatio * (float)UC.StarCount;
-    lStars.size = UC.StarCount - hStars.size - mStars.size;
-
-    hStars.quality = UC.HighStarQuality;
-    mStars.quality = UC.MidStarQuality;
-    lStars.quality = UC.LowStarQuality;
-
-    hStars.create();
-    mStars.create();
-    lStars.create();
+    hStars.quality = UniverseState::StarQuality[2];
+    mStars.quality = UniverseState::StarQuality[1];
+    lStars.quality = UniverseState::StarQuality[0];
 }
 
-void StarPool::generateStarGenAttr(StarGenAttr &attr)
+void StarPool::generateStarPoolAttribute(StarPoolAttribute &attr)
 {
+    BENCHMARK_PROFILE();
     SphereGenerator sgen(attr.quality, attr.quality);
-    attr.payload->instancesCount = attr.size;
-    attr.payload->vertices = sgen.generateVertices();
-    attr.payload->verticesCount = sgen.vSize();
-    attr.payload->indices = sgen.generateIndices();
-    attr.payload->indicesCount = sgen.iSize();
+    attr.sphereAttr = sgen.generateSphere();
 }
 
-void StarPool::generateStarInstancesMesh(StarGenAttr &attr, SectorArray &activeSectors, long &offset, long &count)
+void StarPool::generateStarPoolInstances(StarPoolAttribute &attr, DetailedArray<Sector> &activeSectors, long &offset, long &count)
 {
-    auto UC = UniverseController::GET();
+    BENCHMARK_PROFILE();
     auto instances = std::make_unique<InstanceAttr[]>(attr.size);
 
     Sector currentSector;
     InstanceAttr currentAttr;
-    double sectorSize = UniverseController::GET().SectorSize;
+    double sectorSize = UniverseState::SectorSize;
     long limit = std::min(offset + attr.size, (long)activeSectors.size);
     count = 0;
     for (long i = offset; i < limit; i++)
     {
-        currentSector = activeSectors.sectors[i];
+        currentSector = activeSectors[i];
         RGEN::Seed(currentSector.seed());
         currentAttr.color = RGEN::RandomColor();
         currentAttr.position = currentSector.toPos(sectorSize);
-        currentAttr.model = RGEN::RandomModel(UC.MinStarRadius, UC.MaxStarRadius);
+        currentAttr.model = RGEN::RandomModel(UniverseState::StarRadius[0], UniverseState::StarRadius[1]);
         instances[count] = currentAttr;
         count++;
     }
-    // std::cout << "stars found: " << count << std::endl;
-
-    glm::mat4 emptyModel = glm::mat4(1.0);
-    emptyModel = glm::scale(emptyModel, glm::vec3(0.0));
-    while (count < attr.size)
-    {
-        currentAttr.color = glm::vec4(0.0);
-        currentAttr.position = glm::vec3(0.0);
-        currentAttr.model = emptyModel;
-        instances[count] = currentAttr;
-        count++;
-    }
-    attr.payload->instances = std::move(instances);
-    offset += attr.size;
+    attr.instances.data = std::move(instances);
+    attr.instances.size = count;
+    offset += count;
 }
 
 void StarPool::create()
@@ -69,21 +58,23 @@ void StarPool::create()
     BENCHMARK_PROFILE();
     shader.compileFromFile(vShaderPath, fShaderPath);
 
-    SectorArray activeSectors = UniverseController::SurroundingActiveSector();
+    DetailedArray<Sector> activeSectors = Camera::GetSurroundingActiveSector();
+    // std::cout << "Active sector found: " << activeSectors.size << std::endl;
+
     long offset = 0, count = 0;
 
-    generateStarGenAttr(hStars);
-    generateStarInstancesMesh(hStars, activeSectors, offset, count);
+    generateStarPoolAttribute(hStars);
+    generateStarPoolInstances(hStars, activeSectors, offset, count);
     hStars.createMesh();
     std::cout << "high star count: " << count << std::endl;
 
-    generateStarGenAttr(mStars);
-    generateStarInstancesMesh(mStars, activeSectors, offset, count);
+    generateStarPoolAttribute(mStars);
+    generateStarPoolInstances(mStars, activeSectors, offset, count);
     mStars.createMesh();
     std::cout << "mid star count: " << count << std::endl;
 
-    generateStarGenAttr(lStars);
-    generateStarInstancesMesh(lStars, activeSectors, offset, count);
+    generateStarPoolAttribute(lStars);
+    generateStarPoolInstances(lStars, activeSectors, offset, count);
     lStars.createMesh();
     std::cout << "low star count: " << count << std::endl;
 }
@@ -93,12 +84,16 @@ void StarPool::draw()
     BENCHMARK_PROFILE();
     sphereAngle += 5.0f;
     glm::mat4 viewProjection = Camera::GET().getViewProjection();
-    glm::mat4 transform(1.0f);
-    transform = glm::rotate(transform, util::toRadians(sphereAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 identity(1.0f);
+    glm::mat4 transform1 = glm::rotate(identity, util::toRadians(sphereAngle), rotation1);
+    glm::mat4 transform2 = glm::rotate(identity, util::toRadians(sphereAngle), rotation2);
+    glm::mat4 transform3 = glm::rotate(identity, util::toRadians(sphereAngle), rotation3);
 
     shader.bind();
     shader.setMat4("viewProjection", viewProjection);
-    shader.setMat4("transform", transform);
+    shader.setMat4("transform1", transform1);
+    shader.setMat4("transform2", transform2);
+    shader.setMat4("transform3", transform3);
 
     if (isStarsRecreated)
     {
@@ -115,33 +110,27 @@ void StarPool::draw()
 
 void StarPool::generateStarInstancesTask(StarPool *sp)
 {
-    SectorArray activeSectors = UniverseController::SurroundingActiveSector();
+    BENCHMARK_PROFILE();
+    DetailedArray<Sector> activeSectors = Camera::GetSurroundingActiveSector();
+    // std::cout << "Active sector found: " << activeSectors.size << std::endl;
+
     long offset = 0, count = 0;
 
-    generateStarInstancesMesh(sp->hStars, activeSectors, offset, count);
-    generateStarInstancesMesh(sp->mStars, activeSectors, offset, count);
-    generateStarInstancesMesh(sp->lStars, activeSectors, offset, count);
+    std::lock_guard<std::mutex> guard(generate_task_mutex);
+    generateStarPoolInstances(sp->hStars, activeSectors, offset, count);
+    generateStarPoolInstances(sp->mStars, activeSectors, offset, count);
+    generateStarPoolInstances(sp->lStars, activeSectors, offset, count);
 
     sp->isStarsRecreated = true;
+    thread_count--;
 }
 
 void StarPool::recreate()
 {
-    if (!pauseRecreation)
+    BENCHMARK_PROFILE();
+    if (!pauseRecreation && thread_count < thread_limit)
+    {
+        thread_count++;
         std::thread(generateStarInstancesTask, this).detach();
-    // SectorArray activeSectors = UniverseController::SurroundingActiveSector();
-    // long offset = 0;
-
-    // std::cout << "high ";
-    // generateStarInstancesMesh(hStars, activeSectors, offset);
-    // hStars.recreateMesh();
-
-    // std::cout << "mid ";
-    // generateStarInstancesMesh(mStars, activeSectors, offset);
-    // mStars.recreateMesh();
-
-    // std::cout << "low ";
-    // generateStarInstancesMesh(lStars, activeSectors, offset);
-    // lStars.recreateMesh();
-    // std::cout << std::endl;
+    }
 }

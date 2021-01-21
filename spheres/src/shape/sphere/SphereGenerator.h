@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SphereAttribute.h"
 #include "render/InstanceAttr.h"
 #include "randoms/RGEN.h"
 
@@ -32,6 +33,8 @@ private:
 
 public:
     SphereGenerator(unsigned int x, unsigned int y);
+
+    SphereAttribute generateSphere();
 
     // Populate vertices and move its ownership
     std::unique_ptr<float[]> generateVertices();

@@ -6,6 +6,16 @@ SphereGenerator::SphereGenerator(unsigned int x, unsigned int y)
     numY = y;
 }
 
+SphereAttribute SphereGenerator::generateSphere()
+{
+    SphereAttribute attr;
+    attr.vertices.data = generateVertices();
+    attr.vertices.size = vSize();
+    attr.indices.data = generateIndices();
+    attr.indices.size = iSize();
+    return attr;
+}
+
 void SphereGenerator::pushVertex(int &offset, float p1, float p2, float p3)
 {
     mVertices[offset] = p1;

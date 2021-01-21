@@ -98,7 +98,7 @@ void SpherePool::create()
     payload.indicesCount = sgen.iSize();
     payload.instances = generateSphereInstances();
 
-    mMesh->create(payload);
+    // mMesh->create(payload);
 
     payload.vertices.release();
     payload.indices.release();
@@ -122,7 +122,7 @@ void SpherePool::draw()
     mShader->bind();
     mShader->setMat4("viewProjection", viewProjection);
     mShader->setMat4("transform", transform);
-    mMesh->draw(payload);
+    // mMesh->draw(payload);
 }
 
 void SpherePool::recreateModels()
@@ -133,7 +133,7 @@ void SpherePool::recreateModels()
     // RGEN::SuperSeed("KAT");
     payload.instances = generateSphereInstances();
 
-    mMesh->recreateInstance(payload);
+    // mMesh->recreateInstance(payload);
 
     payload.instances.release();
 }
