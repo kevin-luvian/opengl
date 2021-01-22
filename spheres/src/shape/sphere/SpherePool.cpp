@@ -92,9 +92,9 @@ void SpherePool::create()
     mShader->compileFromFile(vShaderPath, fShaderPath);
 
     payload.instancesCount = mSize;
-    payload.vertices = sgen.generateVertices();
+    // payload.vertices = sgen.generateVertices();
     payload.verticesCount = sgen.vSize();
-    payload.indices = sgen.generateIndices();
+    // payload.indices = sgen.generateIndices();
     payload.indicesCount = sgen.iSize();
     payload.instances = generateSphereInstances();
 

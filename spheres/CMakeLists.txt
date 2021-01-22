@@ -17,6 +17,7 @@ set(SOURCE_FILES
     src/shape/pyramid/Pyramid.cpp
     src/shape/sphere/SpherePool.cpp
     src/shape/sphere/SphereGenerator.cpp
+    src/shape/icosphere/Icosahedron.cpp
     src/universe/SectorGenerator.cpp
     src/universe/StarPool.cpp)
 

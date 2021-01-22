@@ -6,6 +6,11 @@ struct DetailedArray
     std::unique_ptr<T[]> data;
     long size;
 
+    T *get()
+    {
+        return data.get();
+    }
+
     void make_empty(long size_)
     {
         data = std::make_unique<T[]>(size_);
@@ -22,6 +27,14 @@ struct DetailedArray
         {
             data[offset + i] = other[i];
         }
+    }
+    void print()
+    {
+        for (int i = 0; i < size; i++)
+        {
+            std::cout << "(DetailedArray) [" << i << "]:" << data[i] << "\n";
+        }
+        std::cout << std::endl;
     }
 
     long byte_size() { return size * type_size(); }

@@ -5,7 +5,7 @@
 #include "Shader.h"
 #include "InstanceAttr.h"
 #include "AttributePayload.h"
-#include "shape/sphere/SphereAttribute.h"
+#include "shape/ShapeAttribute.h"
 
 // Holds attributes and ID for vertex and vertex buffer in openGl state
 class InstancedMesh
@@ -25,7 +25,7 @@ public:
     void unbind();
 
     // draw elements using glDrawElementsInstanced
-    void draw(SphereAttribute &attr, DetailedArray<InstanceAttr> &instances);
+    void draw(ShapeAttribute &attr, DetailedArray<InstanceAttr> &instances);
 
     // reset all value
     void resetValues();
@@ -34,7 +34,7 @@ public:
     void clear();
 
     // create buffers using default attrib pointer
-    void create(SphereAttribute &attr, DetailedArray<InstanceAttr> &instances);
+    void create(ShapeAttribute &attr, DetailedArray<InstanceAttr> &instances);
 
     // update instance buffer data
     void recreateInstance(DetailedArray<InstanceAttr> &instances);

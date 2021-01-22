@@ -4,21 +4,25 @@
 #include "randoms/RGEN.h"
 #include "universe/StarPool.h"
 #include "universe/UniverseState.h"
+#include "shape/icosphere/IcoSphereGenerator.h"
+#include "shape/icosphere/Icosahedron.h"
 
 static int TEST_SIZE = 5000;
 static int TEST_COUNT = 50;
 
 // SpherePool pool(4000, 15);
 StarPool pool;
+IcosahedronDrawer i;
 
 void onCreate()
 {
     BENCHMARK_PROFILE();
     std::cout << "Starcount " << UniverseState::TotalStarCount() << std::endl;
 
-    pool.create();
+    // pool.create();
     // auto sectors = UniverseController::SurroundingActiveSectors();
     // UniverseController::PrintSectors(sectors.get(), UniverseController::GET().StarCount);
+    i.create();
 }
 
 void onDraw()
@@ -60,7 +64,8 @@ void onDraw()
     {
         pool.recreate();
     }
-    pool.draw();
+    // pool.draw();
+    i.draw();
 }
 
 int main(int, char **)

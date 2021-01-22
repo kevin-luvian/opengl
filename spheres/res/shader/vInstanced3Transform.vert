@@ -22,7 +22,7 @@ void main()
     else if(modulo >= 2.0)
 		cTransform = transform3;
 
-	gl_Position = viewProjection * (model * cTransform * vec4(vertex, 1.0) + vec4(position, 1.0));
+	gl_Position = viewProjection * (model * vec4(vertex, 1.0) + vec4(position, 1.0));
 
 	fColor = vec4(clamp(vertex, 0.0f, 1.0f), 1.0f) + color;
 }

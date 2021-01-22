@@ -27,7 +27,11 @@ void Pyramid::create()
     mMesh = std::make_unique<Mesh>();
 
     mShader->compileFromFile(vShaderPath, fShaderPath);
-    mMesh->create(Attribute<float>{vertices, vertices_size}, Attribute<unsigned int>{indices, indices_size}, []() {
+    // mMesh->create(Attribute<float>{vertices, vertices_size}, Attribute<unsigned int>{indices, indices_size}, []() {
+    //     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+    //     glEnableVertexAttribArray(0);
+    // });
+    mMesh->create(shape, []() {
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
         glEnableVertexAttribArray(0);
     });

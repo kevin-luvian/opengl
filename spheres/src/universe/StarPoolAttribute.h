@@ -1,14 +1,14 @@
 #pragma once
 
 #include "render/InstancedMesh.h"
-#include "shape/sphere/SphereAttribute.h"
+#include "shape/ShapeAttribute.h"
 #include "render/InstanceAttr.h"
 
 struct StarPoolAttribute
 {
     unsigned int size, quality;
     InstancedMesh mesh;
-    SphereAttribute sphereAttr;
+    ShapeAttribute sphereAttr;
     DetailedArray<InstanceAttr> instances;
 
     void createMesh()

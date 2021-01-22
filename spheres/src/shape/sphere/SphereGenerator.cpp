@@ -6,9 +6,9 @@ SphereGenerator::SphereGenerator(unsigned int x, unsigned int y)
     numY = y;
 }
 
-SphereAttribute SphereGenerator::generateSphere()
+ShapeAttribute SphereGenerator::generateSphere()
 {
-    SphereAttribute attr;
+    ShapeAttribute attr;
     attr.vertices.data = generateVertices();
     attr.vertices.size = vSize();
     attr.indices.data = generateIndices();
@@ -18,23 +18,19 @@ SphereAttribute SphereGenerator::generateSphere()
 
 void SphereGenerator::pushVertex(int &offset, float p1, float p2, float p3)
 {
-    mVertices[offset] = p1;
-    mVertices[offset + 1] = p2;
-    mVertices[offset + 2] = p3;
-    offset += 3;
+    mVertices[offset] = {p1, p2, p3};
+    offset += 1;
 }
 
 void SphereGenerator::pushIndice(int &offset, unsigned int p1, unsigned int p2, unsigned int p3)
 {
-    mIndices[offset] = p1;
-    mIndices[offset + 1] = p2;
-    mIndices[offset + 2] = p3;
-    offset += 3;
+    mIndices[offset] = {p1, p2, p3};
+    offset += 1;
 }
 
-std::unique_ptr<float[]> SphereGenerator::generateVertices()
+std::unique_ptr<Vertex[]> SphereGenerator::generateVertices()
 {
-    mVertices = std::make_unique<float[]>(vSize());
+    mVertices = std::make_unique<Vertex[]>(vSize());
     double degX = 360.0 / numX;
     double degY = 180.0 / (numY - 1);
     double len, curRadY, curRadX;
@@ -69,9 +65,9 @@ void SphereGenerator::appendIPoint(int &offset, int pIndex, int vIndex)
     }
 }
 
-std::unique_ptr<unsigned int[]> SphereGenerator::generateIndices()
+std::unique_ptr<Indice[]> SphereGenerator::generateIndices()
 {
-    mIndices = std::make_unique<unsigned int[]>(iSize());
+    mIndices = std::make_unique<Indice[]>(iSize());
 
     int offset, start;
     unsigned int p1, p2, p3;

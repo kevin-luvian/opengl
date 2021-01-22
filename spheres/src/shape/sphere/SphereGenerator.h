@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SphereAttribute.h"
+#include "shape/ShapeAttribute.h"
 #include "render/InstanceAttr.h"
 #include "randoms/RGEN.h"
 
@@ -15,8 +15,8 @@ struct SphereInstanceInput
 class SphereGenerator
 {
 private:
-    std::unique_ptr<float[]> mVertices;
-    std::unique_ptr<unsigned int[]> mIndices;
+    std::unique_ptr<Vertex[]> mVertices;
+    std::unique_ptr<Indice[]> mIndices;
     unsigned int numX, numY;
 
     // push three point to vertices
@@ -34,13 +34,13 @@ private:
 public:
     SphereGenerator(unsigned int x, unsigned int y);
 
-    SphereAttribute generateSphere();
+    ShapeAttribute generateSphere();
 
     // Populate vertices and move its ownership
-    std::unique_ptr<float[]> generateVertices();
+    std::unique_ptr<Vertex[]> generateVertices();
 
     // Populate indices and move its ownership
-    std::unique_ptr<unsigned int[]> generateIndices();
+    std::unique_ptr<Indice[]> generateIndices();
 
     // return array size of vertices
     unsigned int vSize();

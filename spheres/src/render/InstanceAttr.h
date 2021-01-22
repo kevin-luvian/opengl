@@ -9,8 +9,8 @@ struct InstanceAttr
     void print()
     {
         std::cout << "InstanceAttr("
-                  << "color:[" << color.x << "," << color.y << "," << color.z << color.w << "], "
-                  << "position:[x:" << position.x << "y:" << position.y << "z:" << position.z << "], "
-                  << "model:" << model.length << ")";
+                  << "color:[" << color.x << ", " << color.y << ", " << color.z << ", " << color.w << "], "
+                  << "position:[x:" << position.x << ", y:" << position.y << ", z:" << position.z << "], "
+                  << "model:" << model.length << ")\n";
     }
 };

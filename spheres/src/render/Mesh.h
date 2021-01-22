@@ -2,18 +2,9 @@
 
 #include <functional>
 
+#include "shape/ShapeAttribute.h"
 #include "glcomponent/ScreenState.h"
 #include "Shader.h"
-
-// Struct for passing array with length
-template <typename T>
-struct Attribute
-{
-    const T *data;
-    unsigned int length;
-
-    int getSize() { return length * sizeof(T); }
-};
 
 // Holds attributes and ID for vertex and vertex buffer in openGl state
 class Mesh
@@ -41,10 +32,10 @@ public:
     void clear();
 
     // create buffers using default attrib pointer
-    void create(Attribute<float> vertices, Attribute<unsigned int> indices);
+    void create(ShapeAttribute &attr);
 
     // create buffers with callback to set custom attrib pointer
-    void create(Attribute<float> vertices, Attribute<unsigned int> indices, std::function<void()> bindVertexCallback);
+    void create(ShapeAttribute &attr, std::function<void()> bindVertexCallback);
 
     // print attribute values
     void printThis()

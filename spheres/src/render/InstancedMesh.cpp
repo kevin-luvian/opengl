@@ -45,7 +45,7 @@ void InstancedMesh::unbind()
     }
 }
 
-void InstancedMesh::draw(SphereAttribute &attr, DetailedArray<InstanceAttr> &instances)
+void InstancedMesh::draw(ShapeAttribute &attr, DetailedArray<InstanceAttr> &instances)
 {
     bind();
     bool *keys = ScreenState::KeyState();
@@ -56,7 +56,7 @@ void InstancedMesh::draw(SphereAttribute &attr, DetailedArray<InstanceAttr> &ins
     unbind();
 }
 
-void InstancedMesh::create(SphereAttribute &attr, DetailedArray<InstanceAttr> &instances)
+void InstancedMesh::create(ShapeAttribute &attr, DetailedArray<InstanceAttr> &instances)
 {
     // generate vertex array object
     glGenVertexArrays(1, &VAO);
@@ -65,12 +65,12 @@ void InstancedMesh::create(SphereAttribute &attr, DetailedArray<InstanceAttr> &i
     // generate indices/elements buffer
     glGenBuffers(1, &IBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, attr.indices.byte_size(), attr.indices.data.get(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, attr.indices.byte_size(), attr.indices.get(), GL_STATIC_DRAW);
 
     // generate vertex buffer
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, attr.vertices.byte_size(), attr.vertices.data.get(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, attr.vertices.byte_size(), attr.vertices.get(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
