@@ -22,7 +22,7 @@ public:
 private:
     bool keyState[1024];
     unsigned int mWidth, mHeight;
-    bool hideCursor = false;
+    bool hideCursor = true;
 
     ScreenState() {}
 };

@@ -13,16 +13,15 @@ static int TEST_COUNT = 50;
 // SpherePool pool(4000, 15);
 StarPool pool;
 IcosahedronDrawer i;
+Pyramid p;
 
 void onCreate()
 {
     BENCHMARK_PROFILE();
     std::cout << "Starcount " << UniverseState::TotalStarCount() << std::endl;
 
-    // pool.create();
-    // auto sectors = UniverseController::SurroundingActiveSectors();
-    // UniverseController::PrintSectors(sectors.get(), UniverseController::GET().StarCount);
-    i.create();
+    pool.create();
+    // p.create();
 }
 
 void onDraw()
@@ -64,8 +63,8 @@ void onDraw()
     {
         pool.recreate();
     }
-    // pool.draw();
-    i.draw();
+    pool.draw();
+    // p.draw();
 }
 
 int main(int, char **)

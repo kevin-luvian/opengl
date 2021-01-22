@@ -9,7 +9,7 @@ class Camera
 {
 private:
     bool firstMoveFlag;
-    float turnSpeed = 0.1f, deltaTime = 0.0f, lastFrame = 0.0f, viewRange = 1500.0f;
+    float turnSpeed = 0.1f, deltaTime = 0.0f, lastFrame = 0.0f;
     glm::mat4 projection;
     glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 worldUp, camFront, camRight, camUp;
@@ -22,7 +22,7 @@ private:
 public:
     Sector lastSectorPosition = {0, 0, 0};
     bool autoMoveForward = false;
-    float moveSpeed = 50.0f;
+    float moveSpeed = 200.0f;
 
     void initiate();
     void checkKeys();
