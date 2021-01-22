@@ -1,5 +1,6 @@
 #include "glcomponent/Screen.h"
-#include "shape/Pyramid.h"
+#include "shape/pyramid/Pyramid.h"
+#include "shape/icosahedron/Icosahedron.h"
 
 bool is_prime(int x)
 {
@@ -14,23 +15,27 @@ bool is_prime(int x)
 
 Pyramid p;
 Pyramid p2;
+Icosahedron i;
 
 void onCreate()
 {
     BENCHMARK_PROFILE();
     p.create();
-    p2.create();
-    p2.mPos += glm::vec3(0.0f, 0.0f, -3.0f);
+    p.mPos += glm::vec3(0.0f, 0.0f, -3.0f);
+    // p2.create();
+    i.create();
 }
 
 void onDraw()
 {
     BENCHMARK_PROFILE();
     p.update();
-    p2.update();
+    // p2.update();
 
     p.draw();
-    p2.draw();
+    // p2.draw();
+
+    i.draw();
 }
 
 int main(int, char **)

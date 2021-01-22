@@ -47,17 +47,17 @@ void Mesh::drawDefault()
     unbind();
 }
 
-void Mesh::create(Attribute<float> vertices, Attribute<unsigned int> indices)
+void Mesh::create(ShapeAttribute &shape)
 {
-    create(vertices, indices, []() {
+    create(shape, []() {
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
         glEnableVertexAttribArray(0);
     });
 }
 
-void Mesh::create(Attribute<float> vertices, Attribute<unsigned int> indices, std::function<void()> bindVertexCallback)
+void Mesh::create(ShapeAttribute &shape, std::function<void()> bindVertexCallback)
 {
-    indices_size = indices.length;
+    indices_size = shape.indices.size * Indice::count();
 
     // generate vertex array
     glGenVertexArrays(1, &VAO);
@@ -66,12 +66,12 @@ void Mesh::create(Attribute<float> vertices, Attribute<unsigned int> indices, st
     // generate indices/elements buffer
     glGenBuffers(1, &IBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.getSize(), indices.data, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, shape.indices.byte_size(), shape.indices.get(), GL_STATIC_DRAW);
 
     // generate vertex buffer
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.getSize(), vertices.data, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, shape.vertices.byte_size(), shape.vertices.get(), GL_STATIC_DRAW);
 
     // define vertex attributes
     bindVertexCallback();

@@ -13,7 +13,7 @@ set(SOURCE_FILES
     src/glcomponent/Screen.cpp
     src/render/Mesh.cpp
     src/render/Shader.cpp
-    src/shape/Pyramid.cpp)
+    src/shape/pyramid/Pyramid.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

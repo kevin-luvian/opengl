@@ -9,3 +9,4 @@
 #include <memory>
 #include "util/Benchmark.h"
 #include "util/Utils.h"
+#include "util/DetailedArray.h"

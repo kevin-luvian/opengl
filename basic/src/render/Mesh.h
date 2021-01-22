@@ -1,7 +1,7 @@
 #pragma once
 
 #include <functional>
-
+#include "shape/ShapeAttribute.h"
 #include "glcomponent/ScreenState.h"
 #include "Shader.h"
 
@@ -38,10 +38,10 @@ public:
     void clear();
 
     // create buffers using default attrib pointer
-    void create(Attribute<float> vertices, Attribute<unsigned int> indices);
+    void create(ShapeAttribute &shape);
 
     // create buffers with callback to set custom attrib pointer
-    void create(Attribute<float> vertices, Attribute<unsigned int> indices, std::function<void()> bindVertexCallback);
+    void create(ShapeAttribute &shape, std::function<void()> bindVertexCallback);
 
     // print attribute values
     void printThis()

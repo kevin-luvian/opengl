@@ -3,12 +3,13 @@
 #include "glcomponent/Camera.h"
 #include "render/Mesh.h"
 #include "render/Shader.h"
+#include "shape/ShapeAttribute.h"
 
 class Pyramid
 {
 private:
-    std::unique_ptr<Shader> mShader;
-    std::unique_ptr<Mesh> mMesh;
+    Shader mShader;
+    Mesh mMesh;
     glm::mat4 model, mvp;
     float mOffset = 0.0f, mAngle = 0.0f;
 
