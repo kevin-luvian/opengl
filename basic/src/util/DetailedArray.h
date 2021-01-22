@@ -16,7 +16,7 @@ struct DetailedArray
         data = std::make_unique<T[]>(size_);
         size = size_;
     }
-    void make_from(T *data_, long size_)
+    void make_from(const T *data_, long size_)
     {
         data = std::make_unique<T[]>(size_);
         size = size_;
@@ -24,6 +24,24 @@ struct DetailedArray
         {
             data[i] = data_[i];
         }
+    }
+    void make_from(std::vector<T> vData)
+    {
+        data = std::make_unique<T[]>(vData.size());
+        size = vData.size();
+        for (int i = 0; i < size; i++)
+        {
+            data[i] = vData[i];
+        }
+    }
+    std::vector<T> make_to_vector()
+    {
+        std::vector<T> vData;
+        for (int i = 0; i < size; i++)
+        {
+            vData.push_back(data[i]);
+        }
+        return vData;
     }
     void release() { data.release(); }
     void insert(DetailedArray &other)

@@ -3,9 +3,9 @@
 #include "glcomponent/Camera.h"
 #include "render/Mesh.h"
 #include "render/Shader.h"
-#include "shape/ShapeAttribute.h"
+#include "shape/ShapeClass.h"
 
-class Pyramid
+class Pyramid : ShapeClass
 {
 private:
     Shader mShader;
@@ -15,7 +15,8 @@ private:
 
 public:
     glm::vec3 mPos;
-
+    
+    void createShape();
     void create();
     void update();
     void draw();

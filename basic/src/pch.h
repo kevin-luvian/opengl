@@ -7,6 +7,7 @@
 #include <cmath>
 #include <iostream>
 #include <memory>
+#include <vector>
 #include "util/Benchmark.h"
 #include "util/Utils.h"
 #include "util/DetailedArray.h"

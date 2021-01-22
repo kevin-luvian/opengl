@@ -1,6 +1,7 @@
 #include "glcomponent/Screen.h"
 #include "shape/pyramid/Pyramid.h"
 #include "shape/icosahedron/Icosahedron.h"
+#include "shape/icosphere/IcoSphere.h"
 
 bool is_prime(int x)
 {
@@ -14,34 +15,41 @@ bool is_prime(int x)
 }
 
 Pyramid p;
-Pyramid p2;
 Icosahedron i;
+
+static const int icps_count = 7;
+IcoSphere icps[icps_count];
+
 
 void onCreate()
 {
     BENCHMARK_PROFILE();
+    float z = -3.0f;
+    for(int i = 0;i<icps_count;i++)
+    {
+        icps[i].mDepth = i;
+        icps[i].create();
+        icps[i].pos = glm::vec3(0.0f, 0.0f, z * i);
+    }
     p.create();
-    p.mPos += glm::vec3(0.0f, 0.0f, -3.0f);
-    // p2.create();
-    i.create();
+    p.mPos += glm::vec3(-3.0f, 0.0f, 0.0f);
 }
 
 void onDraw()
 {
     BENCHMARK_PROFILE();
+    for(int i = 0;i<icps_count;i++)
+    {
+        icps[i].draw();
+    }
+
     p.update();
-    // p2.update();
-
     p.draw();
-    // p2.draw();
-
-    i.draw();
 }
 
 int main(int, char **)
 {
     Benchmark::Get().begin("opengl");
-    std::thread(is_prime, 313222313).detach();
     Screen screen;
     screen.run(onCreate, onDraw);
     Benchmark::Get().end();

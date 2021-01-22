@@ -40,10 +40,13 @@ void Mesh::drawDefault()
 {
     bind();
     bool *keys = ScreenState::KeyState();
+    glPointSize(1.0f);
     if (keys[GLFW_KEY_TAB])
-        glDrawElements(GL_LINE_STRIP, indices_size, GL_UNSIGNED_INT, 0); // draw wireframe
+        // glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, 0); // draw full
+        glDrawElements(GL_LINES, indices_size, GL_UNSIGNED_INT, 0); // draw wireframe
     else
         glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, 0); // draw full
+        // glDrawElements(GL_POINTS, indices_size, GL_UNSIGNED_INT, 0); // draw wireframe
     unbind();
 }
 

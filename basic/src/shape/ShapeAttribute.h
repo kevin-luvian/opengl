@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Indice.h"
+
 struct Vertex
 {
     float x, y, z;
@@ -7,23 +9,19 @@ struct Vertex
     {
         return 3;
     }
+    void normalize()
+    {
+        // double invMag = 1 / sqrt(x * x + y * y + z * z);
+        double invMag = util::invsqrtQuake(x * x + y * y + z * z);
+        x *= invMag;
+        y *= invMag;
+        z *= invMag;
+    }
+    // add two Vertex attribute and return new Vertex
+    Vertex operator+(Vertex &other) const { return {x + other.x, y + other.y, z + other.z}; }
     friend std::ostream &operator<<(std::ostream &out, const Vertex &v)
     {
         out << "x:" << v.x << ", y:" << v.y << ", z:" << v.z;
-        return out;
-    }
-};
-
-struct Indice
-{
-    unsigned int top, left, right;
-    static unsigned long count()
-    {
-        return 3;
-    }
-    friend std::ostream &operator<<(std::ostream &out, const Indice &t)
-    {
-        out << "top:" << t.top << ", left:" << t.left << ", right:" << t.right;
         return out;
     }
 };
