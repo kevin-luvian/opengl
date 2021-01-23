@@ -3,6 +3,7 @@
 #include "shape/icosahedron/Icosahedron.h"
 #include "shape/sphere/icosphere/IcoSphere.h"
 #include "shape/sphere/Sphere.h"
+#include "random/RGEN.h"
 
 bool is_prime(int x)
 {
@@ -28,7 +29,10 @@ void onCreate()
     float z = -3.0f;
     for (int i = 0; i < spheres_count; i++)
     {
-        spheres[i].setSegment(i * 10);
+        if (i > 0)
+            spheres[i].setSegment(i * 10);
+        else
+            spheres[i].setSegment(4);
         spheres[i].create();
         spheres[i].pos = glm::vec3(3.0f, 0.0f, z * i);
     }

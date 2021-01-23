@@ -8,6 +8,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <stdint.h>
 #include "util/Benchmark.h"
 #include "util/Utils.h"
 #include "util/DetailedArray.h"
