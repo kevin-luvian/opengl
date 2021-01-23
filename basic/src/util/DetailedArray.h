@@ -44,7 +44,7 @@ struct DetailedArray
         return vData;
     }
     void release() { data.release(); }
-    void insert(DetailedArray &other)
+    void insert_array(DetailedArray &other)
     {
         append(other, 0, other.size);
     }

@@ -14,7 +14,8 @@ set(SOURCE_FILES
     src/render/Mesh.cpp
     src/render/Shader.cpp
     src/shape/pyramid/Pyramid.cpp
-    src/shape/icosphere/IcoSphere.cpp)
+    src/shape/sphere/Sphere.cpp
+    src/shape/sphere/icosphere/IcoSphere.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

@@ -1,7 +1,8 @@
 #include "glcomponent/Screen.h"
 #include "shape/pyramid/Pyramid.h"
 #include "shape/icosahedron/Icosahedron.h"
-#include "shape/icosphere/IcoSphere.h"
+#include "shape/sphere/icosphere/IcoSphere.h"
+#include "shape/sphere/Sphere.h"
 
 bool is_prime(int x)
 {
@@ -17,15 +18,22 @@ bool is_prime(int x)
 Pyramid p;
 Icosahedron i;
 
-static const int icps_count = 7;
-IcoSphere icps[icps_count];
-
+static const int spheres_count = 7;
+Sphere spheres[spheres_count];
+IcoSphere icps[spheres_count];
 
 void onCreate()
 {
     BENCHMARK_PROFILE();
     float z = -3.0f;
-    for(int i = 0;i<icps_count;i++)
+    for (int i = 0; i < spheres_count; i++)
+    {
+        spheres[i].setSegment(i * 10);
+        spheres[i].create();
+        spheres[i].pos = glm::vec3(3.0f, 0.0f, z * i);
+    }
+    z = -3.0f;
+    for (int i = 0; i < spheres_count; i++)
     {
         icps[i].mDepth = i;
         icps[i].create();
@@ -38,7 +46,11 @@ void onCreate()
 void onDraw()
 {
     BENCHMARK_PROFILE();
-    for(int i = 0;i<icps_count;i++)
+    for (int i = 0; i < spheres_count; i++)
+    {
+        spheres[i].draw();
+    }
+    for (int i = 0; i < spheres_count; i++)
     {
         icps[i].draw();
     }

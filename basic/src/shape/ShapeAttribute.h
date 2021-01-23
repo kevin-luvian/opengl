@@ -12,7 +12,7 @@ struct Vertex
     void normalize()
     {
         // double invMag = 1 / sqrt(x * x + y * y + z * z);
-        double invMag = util::invsqrtQuake(x * x + y * y + z * z);
+        double invMag = util::fisqrt(x * x + y * y + z * z);
         x *= invMag;
         y *= invMag;
         z *= invMag;
