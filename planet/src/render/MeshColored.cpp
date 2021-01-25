@@ -46,8 +46,8 @@ void MeshColored::drawDefault()
     glPointSize(1.0f);
     if (keys[GLFW_KEY_TAB])
         // glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, 0); // draw full
-        // glDrawElements(GL_LINES, indices_size, GL_UNSIGNED_INT, 0); // draw wireframe
-        glDrawElements(GL_POINTS, indices_size, GL_UNSIGNED_INT, 0); // draw wireframe
+        glDrawElements(GL_LINES, indices_size, GL_UNSIGNED_INT, 0); // draw wireframe
+    // glDrawElements(GL_POINTS, indices_size, GL_UNSIGNED_INT, 0); // draw wireframe
     else
         glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, 0); // draw full
     // glDrawElements(GL_LINES, indices_size, GL_UNSIGNED_INT, 0); // draw wireframe
@@ -70,7 +70,7 @@ void MeshColored::create(ShapeAttribute &shape, DetailedArray<vec4d> &colors)
     // generate vertex buffer
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, shape.vertices.byte_size(), shape.vertices.get(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, shape.vertices.byte_size(), shape.vertices.get(), GL_STREAM_DRAW);
 
     // define vertex attributes
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -79,7 +79,7 @@ void MeshColored::create(ShapeAttribute &shape, DetailedArray<vec4d> &colors)
     // color attribute
     glGenBuffers(1, &COLOR_BO);
     glBindBuffer(GL_ARRAY_BUFFER, COLOR_BO);
-    glBufferData(GL_ARRAY_BUFFER, colors.byte_size(), colors.get(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, colors.byte_size(), colors.get(), GL_STREAM_DRAW);
 
     // color layout=1
     glVertexAttribPointer(1, 4, GL_DOUBLE, GL_FALSE, 0, 0);
@@ -95,10 +95,10 @@ void MeshColored::create(ShapeAttribute &shape, DetailedArray<vec4d> &colors)
 void MeshColored::updateVertices(ShapeAttribute &shape, DetailedArray<vec4d> &colors)
 {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, shape.vertices.byte_size(), shape.vertices.get(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, shape.vertices.byte_size(), shape.vertices.get(), GL_STREAM_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, COLOR_BO);
-    glBufferData(GL_ARRAY_BUFFER, colors.byte_size(), colors.get(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, colors.byte_size(), colors.get(), GL_STREAM_DRAW);
 
     // reset
     glBindBuffer(GL_ARRAY_BUFFER, 0);

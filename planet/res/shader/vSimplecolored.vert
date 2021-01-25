@@ -10,5 +10,5 @@ uniform mat4 mvp;
 void main()
 {
 	gl_Position = mvp * vec4(pos, 1.0);
-	fCol = vec4(clamp(color, 0.0f, 1.0f), 1.0f);
+	fCol = vec4(color, 1.0f);
 }

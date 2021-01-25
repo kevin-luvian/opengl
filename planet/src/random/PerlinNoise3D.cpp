@@ -19,9 +19,23 @@ static const int Perm[256] = {
     172, 186, 136, 128, 150, 32, 29, 182, 126, 135, 139, 225, 134, 210, 149, 177,
     113, 191, 53, 95, 216, 6, 70, 64, 69, 152, 240, 44, 171, 105, 160, 58};
 
-static const vec3d G[12] = {{1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}};
+static const vec3d G3D[12] = {{1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}};
+static const vec2d G2D[4] = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
-PerlinNoise3D::PerlinNoise3D()
+PerlinNoise3D::PerlinNoise3D(
+    float frequency,
+    float lacunarity,
+    float amplitude,
+    float persistence)
+{
+    mFrequency = frequency;
+    mLacunarity = lacunarity;
+    mAmplitude = amplitude;
+    mPersistence = persistence;
+    createPTable();
+}
+
+void PerlinNoise3D::createPTable()
 {
     P.make_empty(PermSize * 3);
     for (int i = 0; i < PermSize; i++)
@@ -43,6 +57,48 @@ void PerlinNoise3D::shuffle(DetailedArray<int> &table, unsigned int boundary)
         i2 = RGEN::Uint(0, boundary);
         table.swap(i, i2);
     }
+}
+
+double PerlinNoise3D::noise(double x, double y) const
+{
+    int X = util::ffloor(x) & 255;
+    int Y = util::ffloor(y) & 255;
+
+    x -= util::ffloor(x);
+    y -= util::ffloor(y);
+
+    // Calculate a set of four hashed gradient indices
+    unsigned int gi00 = P[P[X] + Y] % 4;
+    unsigned int gi01 = P[P[X] + Y + 1] % 4;
+    unsigned int gi10 = P[P[X + 1] + Y] % 4;
+    unsigned int gi11 = P[P[X + 1] + Y + 1] % 4;
+
+    // Get dot product for each corner
+    double d00 = G2D[gi00].dot({x, y});
+    double d01 = G2D[gi01].dot({x, y - 1.0});
+    double d10 = G2D[gi10].dot({x - 1.0, y});
+    double d11 = G2D[gi11].dot({x - 1.0, y - 1.0});
+
+    x = fade(x);
+    y = fade(y);
+
+    return interpolate(y, interpolate(x, d00, d10), interpolate(x, d01, d11));
+}
+
+double PerlinNoise3D::fractal(size_t octaves, double x, double y) const
+{
+    double frequency = mFrequency;
+    double amplitude = mAmplitude;
+    double ampAcc = amplitude;
+    double noises;
+    for (int i = 0; i < octaves; i++)
+    {
+        noises += noise(x * frequency, y * frequency) * amplitude;
+        frequency *= mLacunarity;
+        amplitude /= mPersistence;
+        ampAcc += amplitude;
+    }
+    return noises / ampAcc;
 }
 
 double PerlinNoise3D::noise(double x, double y, double z) const
@@ -82,15 +138,15 @@ double PerlinNoise3D::noise(double x, double y, double z) const
     vec3d v111 = {x - 1.0, y - 1.0, z - 1.0};
 
     // dot products
-    double d000 = v000.dot(G[gi000]);
-    double d001 = v001.dot(G[gi001]);
-    double d010 = v010.dot(G[gi010]);
-    double d011 = v011.dot(G[gi011]);
+    double d000 = v000.dot(G3D[gi000]);
+    double d001 = v001.dot(G3D[gi001]);
+    double d010 = v010.dot(G3D[gi010]);
+    double d011 = v011.dot(G3D[gi011]);
 
-    double d100 = v100.dot(G[gi100]);
-    double d101 = v101.dot(G[gi101]);
-    double d110 = v110.dot(G[gi110]);
-    double d111 = v111.dot(G[gi111]);
+    double d100 = v100.dot(G3D[gi100]);
+    double d101 = v101.dot(G3D[gi101]);
+    double d110 = v110.dot(G3D[gi110]);
+    double d111 = v111.dot(G3D[gi111]);
 
     double u = fade(x);
     double v = fade(y);
@@ -114,21 +170,18 @@ double PerlinNoise3D::noise(double x, double y, double z) const
 
 double PerlinNoise3D::fractal(size_t octaves, double x, double y, double z) const
 {
-    double frequency = 1.8;
-    double lacunarity = 1.8;
-    double scale = 2.0;
-    double scaleAcc = scale;
-    double scalingBias = 1.7;
-    double noiseVal, noiseAcc;
+    double frequency = mFrequency;
+    double amplitude = mAmplitude;
+    double ampAcc = amplitude;
+    double noises;
     for (int i = 0; i < octaves; i++)
     {
-        noiseVal = noise(x * frequency, y * frequency, z * frequency);
-        noiseAcc += noiseVal * scale;
-        frequency *= lacunarity;
-        scale /= scalingBias;
-        scaleAcc += scale;
+        noises += noise(x * frequency, y * frequency, z * frequency) * amplitude;
+        frequency *= mLacunarity;
+        amplitude /= mPersistence;
+        ampAcc += amplitude;
     }
-    return noiseAcc / scaleAcc;
+    return noises / ampAcc;
 }
 
 double PerlinNoise3D::interpolate(double t, double a1, double a2) const

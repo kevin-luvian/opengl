@@ -25,7 +25,6 @@ private:
     const char *vShaderPath = "../res/shader/vSimplecolored.vert";
     const char *fShaderPath = "../res/shader/fSimple.frag";
 
-    DetailedArray<vec4d> colors;
     MeshColored mesh;
     Shader shader;
 
@@ -35,12 +34,14 @@ private:
     void createIcosahedron(Vertices &vertices, Triangles &triangles);
 
 public:
+    ShapeAttribute shape;
+    DetailedArray<vec4d> colors;
     unsigned int mDepth;
     glm::vec3 pos = glm::vec3(0.0f);
     bool isCreated = false;
     int createdCount = 0;
     bool isWarping = false, isWarped = false;
-    double warpOffset, warpOffsetSpeed = 0.005;
+    double warpOffset, warpOffsetSpeed = 0.01;
 
     IcoSphere() : mDepth(0) {}
     IcoSphere(unsigned int depth) : mDepth(depth) {}

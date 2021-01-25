@@ -103,62 +103,54 @@ void IcoSphere::draw()
         shader.unbind();
     }
 }
-void IcoSphere::warp()
+
+static void warpNoiseTask(IcoSphere *sp, PerlinNoise3D *p3d, int start, int end)
 {
     BENCHMARK_PROFILE();
-    auto planetColor = Pallete::CINNAMON_PLANET;
-    // auto planetColor = Pallete::BLUE_PLANET;
-    // SimplexNoise sn;
-    // PerlinNoise2D pNoise;
-    RGEN::Seed(123);
-    PerlinNoise3D noise3;
-    warpOffset += warpOffsetSpeed;
-
-    unsigned int size = shape.vertices.size;
-    unsigned int sDiv = size / 2;
-    unsigned int vOffset = 0;
-    double lat, lon, zoff, noise;
-    for (int i = 0; i < size; i++)
+    for (int i = start; i < end; i++)
     {
-        Vertex &cVertex = shape.vertices[i];
-        // zoff = currentVertex.z < 0 ? 0.0 : 180.0;
-        // lat = util::toDegrees(acos(currentVertex.x)) + zoff;
-        // lat = util::mapBetweenFloat(lat, 0.0, 360.0, 0.0, 2.0);
-
-        // lon = util::toDegrees(acos(currentVertex.y));
-        // lon = util::mapBetweenFloat(lon, 0.0, 180.0, 0.0, 2.0);
-        // noise = noise3.fractal(7, lat, lon, 1.0);
+        Vertex &cVertex = sp->shape.vertices[i];
         cVertex.normalize();
-        noise = noise3.fractal(5, cVertex.x + warpOffset, cVertex.y, cVertex.z);
+        double noise = p3d->fractal(5, cVertex.x, cVertex.y - sp->warpOffset, cVertex.z);
         noise = 1.0f + util::mapBetweenFloat(noise, -1.0, 1.0, -0.2, 0.2);
-        // std::cout << "lat: " << lat << " lon: " << lon << " noise: " << noise << "\n";
-        if (noise < 0.96)
+
+        auto planetColor = Pallete::CINNAMON_PLANET;
+
+        if (noise > 0.98 & noise < 1.0)
         {
-            colors[i] = planetColor.deepSea;
+            sp->colors[i] = planetColor.sea;
             noise = 1.0;
         }
         else if (noise < 1.0)
         {
-            colors[i] = planetColor.sea;
+            sp->colors[i] = planetColor.deepSea;
             noise = 1.0;
         }
         else if (noise > 1.0 && noise < 1.005)
-        {
-            colors[i] = planetColor.beach;
-        }
+            sp->colors[i] = planetColor.beach;
+        else if (noise > 1.09)
+            sp->colors[i] = planetColor.mountainTop;
         else if (noise > 1.04)
-        {
-            colors[i] = planetColor.mountain;
-        }
+            sp->colors[i] = planetColor.mountain;
         else
-        {
-            colors[i] = planetColor.soil;
-        }
-        // noise = 1.0f + util::mapBetweenFloat(noise, -0.2, 0.2, -0.05, 0.05);
+            sp->colors[i] = planetColor.soil;
         cVertex.scale(noise);
-        if ((i + 1) % 5 == 0)
-            std::cout << "\n";
     }
+}
+void IcoSphere::warp()
+{
+    BENCHMARK_PROFILE();
+    RGEN::Seed(12345);
+    PerlinNoise3D noise3;
+    warpOffset += warpOffsetSpeed;
+    int batchSize = shape.vertices.size / 3;
+
+    std::thread t01(warpNoiseTask, this, &noise3, batchSize, batchSize * 2);
+    std::thread t02(warpNoiseTask, this, &noise3, batchSize * 2, shape.vertices.size);
+    warpNoiseTask(this, &noise3, 0, batchSize);
+
+    t01.join();
+    t02.join();
 }
 
 static void warpNoiseSpaceTask(IcoSphere *sp)

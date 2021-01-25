@@ -39,8 +39,6 @@ void Sheet::createShape()
 }
 void Sheet::create()
 {
-    createShape();
-    warp();
     shader.compileFromFile(vShaderPath, fShaderPath);
     mesh.create(shape, colors);
 }
@@ -55,33 +53,98 @@ void Sheet::draw()
     mesh.drawDefault();
     shader.unbind();
 }
+
+static vec4d pickColor(double &height)
+{
+    auto cPlanet = Pallete::CINNAMON_PLANET;
+    if (height < -0.1)
+    {
+        height = -0.05;
+        return cPlanet.deepSea;
+    }
+    if (height < -0.05)
+    {
+        height = -0.04;
+        return cPlanet.sea;
+    }
+    if (height < 0.0)
+        return cPlanet.beach;
+    if (height < 0.2)
+        return cPlanet.soil;
+    if (height < 0.5)
+        return cPlanet.mountain;
+    else
+        return cPlanet.mountainTop;
+}
+
+static void warpTask(Sheet *sh, PerlinNoise3D *p3d, SimplexNoise *sn, int start, int end)
+{
+    double noiseY;
+    for (int i = start; i < end; i++)
+    {
+        Vertex &cVert = sh->shape.vertices[i];
+        noiseY = p3d->fractal(5, cVert.x + sh->nOffset, cVert.z);
+        // noiseY = sn->fractal(5, cVert.x + sh->nOffset, cVert.z);
+        sh->colors[i] = pickColor(noiseY);
+        noiseY = 1.0 + util::mapBetweenFloat(noiseY, -1.0, 1.0, -0.3, 0.3);
+        cVert.y = noiseY;
+    }
+}
 void Sheet::warp()
 {
-    PerlinNoise3D pNoise3;
-    PerlinNoise2D pNoise2;
-    PerlinNoise pNoise;
-    pNoise.seed2DNoise(RGEN::Uint(0, 99999), 360, 360);
+    RGEN::Seed(12345);
+    SimplexNoise snoise;
+    PerlinNoise3D pNoise3(3.0, 1.8, 1.0, 2.0);
     unsigned int vOffset = 0;
-    for (int z = 0; z < height; z++)
+    int batchSize = shape.vertices.size / 3;
+
+    std::thread t01(warpTask, this, &pNoise3, &snoise, batchSize, batchSize * 2);
+    std::thread t02(warpTask, this, &pNoise3, &snoise, batchSize * 2, shape.vertices.size);
+    warpTask(this, &pNoise3, &snoise, 0, batchSize);
+
+    t01.join();
+    t02.join();
+    nOffset += nOffsetIcr;
+}
+void createTask(Sheet *sh)
+{
+    sh->createShape();
+    sh->warp();
+    std::cout << "sheet is created \n";
+    sh->isCreated = true;
+    sh->createdState = 2;
+}
+static void warpNoiseSpaceTask(Sheet *sh)
+{
+    sh->warp();
+    sh->isWarped = true;
+    sh->isWarping = false;
+}
+void Sheet::runWithNoiseThread()
+{
+    if (!isCreated && createdState == 0)
     {
-        for (int x = 0; x < width; x++)
+        createdState = 1;
+        std::thread(createTask, this).detach();
+        std::cout << "creating sheet \n";
+    }
+    else if (isCreated && createdState == 2)
+    {
+        createdState = 3;
+        create();
+    }
+    else if (isCreated)
+    {
+        if (!isWarping)
         {
-            auto &currentVert = shape.vertices[vOffset++];
-            // double noiseY = pNoise.noise2D(x, z);
-            double xd = (double)x / 100.0;
-            double zd = (double)z / 100.0;
-            // double noiseY = pNoise2.noise(xd, zd);
-            double noiseY = pNoise3.fractal(5, xd, zd, 1.0);
-            noiseY = 1.0 + util::mapBetweenFloat(noiseY, -1.0, 1.0, -0.1, 0.1);
-            int colIndex = z * width + x;
-            if (noiseY > 1.0)
-                colors[colIndex] = {1.0, 0.0, 0.0, 1.0};
-            else if (noiseY <= 1.0)
-                colors[colIndex] = {0.0, 0.0, 1.0, 1.0};
-            else
-                colors[colIndex] = {0.0, 1.0, 0.0, 1.0};
-            currentVert.y = noiseY;
-            // std::cout << "[" << vOffset << "] x:" << x << " noisey:" << noiseY << "\n";
+            isWarping = true;
+            std::thread(warpNoiseSpaceTask, this).detach();
         }
+        else if (isWarped)
+        {
+            isWarped = false;
+            mesh.updateVertices(shape, colors);
+        }
+        draw();
     }
 }
