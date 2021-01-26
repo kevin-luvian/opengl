@@ -29,10 +29,6 @@ void Sphere::generateVertices()
 
 void Sphere::appendTBIndices(unsigned int &offset, unsigned int pIndex, unsigned int vIndex)
 {
-    for (int i = 0; i < segment; i++)
-    {
-        shape.indices[offset++] = {pIndex, vIndex + i, ((i + 1) % segment) + vIndex};
-    }
 }
 
 void Sphere::generateIndices()
@@ -44,7 +40,15 @@ void Sphere::generateIndices()
     unsigned int offset = 0;
     unsigned int p1, p2, p3;
 
-    appendTBIndices(offset, 0, 1); // push first batch
+    // push first batch
+    unsigned int pointI = 0;
+    unsigned int startI = 1;
+    for (int i = 0; i < segment; i++)
+    {
+        shape.indices[offset++] = {((i + 1) % segment) + startI, startI + i, pointI};
+    }
+
+    // push mid triangles
     for (int i = 0; i < segment - 3; i++)
     {
         start = i * segment + 1;
@@ -54,12 +58,19 @@ void Sphere::generateIndices()
             p2 = ((j + 1) % segment) + start;
             p3 = p1 + segment;
             shape.indices[offset++] = {p1, p2, p3};
-            shape.indices[offset++] = {p3, p2 + segment, p2};
+            shape.indices[offset++] = {p2, p2 + segment, p3};
             // pushIndice(offset, p1, p2, p3);
             // pushIndice(offset,);
         }
     }
-    appendTBIndices(offset, verticesSize() - 1, verticesSize() - 1 - segment); // push last batch
+
+    // push last batch
+    pointI = verticesSize() - 1;
+    startI = verticesSize() - 1 - segment;
+    for (int i = 0; i < segment; i++)
+    {
+        shape.indices[offset++] = {pointI, startI + i, ((i + 1) % segment) + startI};
+    }
 }
 
 void Sphere::createShape()

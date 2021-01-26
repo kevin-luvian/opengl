@@ -73,6 +73,9 @@ bool Screen::setupWindow()
     // enable depth
     glEnable(GL_DEPTH_TEST);
 
+    // enable culling
+    glEnable(GL_CULL_FACE);
+
     // enable MSAA
     glEnable(GL_MULTISAMPLE);
 

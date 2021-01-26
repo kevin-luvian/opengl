@@ -30,9 +30,9 @@ void IcoSphere::subdivideTriangle(const Indice &triangle, Vertices &vertices, Lo
     {
         mid[i] = findEdgeMid(lookup, vertices, triangle[(i + 1) % 3], triangle[(i + 2) % 3]);
     }
-    newSet.push_back({triangle.left, mid.right, mid.top});
-    newSet.push_back({mid.right, triangle.top, mid.left});
-    newSet.push_back({mid.top, mid.left, triangle.right});
+    newSet.push_back({mid.top, mid.right, triangle.left});
+    newSet.push_back({mid.left, triangle.top, mid.right});
+    newSet.push_back({triangle.right, mid.left, mid.top});
     newSet.push_back(mid);
 }
 void IcoSphere::subdivide(Vertices &vertices, Triangles &triangles, unsigned int depth)

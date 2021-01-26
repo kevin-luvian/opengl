@@ -2,7 +2,7 @@
 
 layout(location = 0) in vec3 pos;
 
-flat out vec4 fCol;
+out vec4 fCol;
 
 uniform mat4 mvp;
 
