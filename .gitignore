@@ -73,3 +73,6 @@ CMakeUserPresets.json
 
 # Build folder
 */build/*
+
+# Resource json
+*/res/*.json
