@@ -32,10 +32,14 @@ void Sheet::generateIndices()
 
 void Sheet::createShape()
 {
+    BENCHMARK_PROFILE();
     // shape.vertices
     generateVertices();
     generateIndices();
     colors.make_empty(shape.vertices.size);
+}
+Sheet::Sheet()
+{
 }
 void Sheet::create()
 {
@@ -47,24 +51,26 @@ void Sheet::draw()
     auto model = glm::mat4(1.0f);
     // model = glm::rotate(model, util::toRadians(10.0), glm::vec3(1.0f, 0.0f, 0.0f));
     model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(3.0f, 1.0f, 3.0f));
     auto mvp = Camera::GET().getViewProjection() * model;
     shader.bind();
-    shader.setMVP(mvp);
+    shader.setMat4("mvp", mvp);
+    ambientLight.use(shader);
     mesh.drawDefault();
     shader.unbind();
 }
 
 static vec4d pickColor(double &height)
 {
-    auto cPlanet = Pallete::CINNAMON_PLANET;
-    if (height < -0.1)
+    auto cPlanet = Pallete::BLUE_PLANET;
+    if (height < -0.3)
     {
-        height = -0.05;
+        height = -0.11;
         return cPlanet.deepSea;
     }
-    if (height < -0.05)
+    if (height < -0.1)
     {
-        height = -0.04;
+        height = -0.1;
         return cPlanet.sea;
     }
     if (height < 0.0)
@@ -79,12 +85,12 @@ static vec4d pickColor(double &height)
 
 static void warpTask(Sheet *sh, PerlinNoise3D *p3d, SimplexNoise *sn, int start, int end)
 {
+    BENCHMARK_PROFILE();
     double noiseY;
     for (int i = start; i < end; i++)
     {
         Vertex &cVert = sh->shape.vertices[i];
-        noiseY = p3d->fractal(5, cVert.x + sh->nOffset, cVert.z);
-        // noiseY = sn->fractal(5, cVert.x + sh->nOffset, cVert.z);
+        noiseY = p3d->fractal(7, cVert.x, sh->nOffset, cVert.z);
         sh->colors[i] = pickColor(noiseY);
         noiseY = 1.0 + util::mapBetweenFloat(noiseY, -1.0, 1.0, -0.3, 0.3);
         cVert.y = noiseY;
@@ -94,7 +100,7 @@ void Sheet::warp()
 {
     RGEN::Seed(12345);
     SimplexNoise snoise;
-    PerlinNoise3D pNoise3(3.0, 1.8, 1.0, 2.0);
+    PerlinNoise3D pNoise3(2.5);
     unsigned int vOffset = 0;
     int batchSize = shape.vertices.size / 3;
 
@@ -116,8 +122,10 @@ void createTask(Sheet *sh)
 }
 static void warpNoiseSpaceTask(Sheet *sh)
 {
+    BENCHMARK_PROFILE();
     sh->warp();
     sh->isWarped = true;
+    // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     sh->isWarping = false;
 }
 void Sheet::runWithNoiseThread()
@@ -135,15 +143,15 @@ void Sheet::runWithNoiseThread()
     }
     else if (isCreated)
     {
-        if (!isWarping)
-        {
-            isWarping = true;
-            std::thread(warpNoiseSpaceTask, this).detach();
-        }
-        else if (isWarped)
+        if (isWarped)
         {
             isWarped = false;
             mesh.updateVertices(shape, colors);
+        }
+        else if (!isWarping)
+        {
+            isWarping = true;
+            std::thread(warpNoiseSpaceTask, this).detach();
         }
         draw();
     }

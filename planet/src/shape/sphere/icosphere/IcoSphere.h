@@ -14,6 +14,7 @@
 #include "random/simplexnoise/SimplexNoise.h"
 #include "unit/vec4d.h"
 #include "color/Pallete.h"
+#include "light/Light.h"
 
 class IcoSphere : ShapeClass
 {
@@ -27,6 +28,7 @@ private:
 
     MeshColored mesh;
     Shader shader;
+    Light ambientLight;
 
     void subdivide(Vertices &vertices, Triangles &triangles, unsigned int depth);
     unsigned int findEdgeMid(Lookup &lookup, Vertices &vertices, unsigned int vert1, unsigned int vert2);
@@ -37,7 +39,7 @@ public:
     ShapeAttribute shape;
     DetailedArray<vec4d> colors;
     unsigned int mDepth;
-    glm::vec3 pos = glm::vec3(0.0f);
+    glm::vec3 pos = glm::vec3(0.0f, 1.5f, 0.0f);
     bool isCreated = false;
     int createdCount = 0;
     bool isWarping = false, isWarped = false;

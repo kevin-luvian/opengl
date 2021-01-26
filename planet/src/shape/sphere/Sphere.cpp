@@ -81,7 +81,7 @@ void Sphere::draw()
     auto vp = Camera::GET().getViewProjection();
     auto model = glm::translate(glm::mat4(1.0f), pos);
     shader.bind();
-    shader.setMVP(vp * model);
+    shader.setMat4("mvp", vp * model);
     mesh.drawDefault();
     shader.unbind();
 }

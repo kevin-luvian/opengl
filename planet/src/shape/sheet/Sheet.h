@@ -5,11 +5,12 @@
 #include "render/MeshColored.h"
 #include "shape/ShapeClass.h"
 #include "random/simplexnoise/SimplexNoise.h"
-#include "random/PerlinNoise.h"
-#include "random/PerlinNoise2D.h"
 #include "random/PerlinNoise3D.h"
 #include "unit/vec4d.h"
 #include "color/Pallete.h"
+#include "light/Light.h"
+#include <thread>
+#include <chrono>
 
 class Sheet : public ShapeClass
 {
@@ -18,17 +19,20 @@ private:
     const char *fShaderPath = "../res/shader/fSimple.frag";
     unsigned int width, height;
 
-    Shader shader;
     MeshColored mesh;
 
     void generateVertices();
     void generateIndices();
 
 public:
+    Light ambientLight;
+    Shader shader;
+
+    Sheet();
     ShapeAttribute shape;
     DetailedArray<vec4d> colors;
     int createdState = 0;
-    double nOffset, nOffsetIcr = 0.005;
+    double nOffset, nOffsetIcr = 0.01;
     double isThreadRunning, isCreated, isWarping, isWarped;
     Sheet(unsigned int width_, unsigned int height_) : width(width_), height(height_) {}
     void warp();

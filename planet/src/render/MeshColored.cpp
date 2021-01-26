@@ -76,6 +76,8 @@ void MeshColored::create(ShapeAttribute &shape, DetailedArray<vec4d> &colors)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
 
+    // unsigned long streamDraw = ;
+
     // color attribute
     glGenBuffers(1, &COLOR_BO);
     glBindBuffer(GL_ARRAY_BUFFER, COLOR_BO);

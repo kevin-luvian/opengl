@@ -16,6 +16,11 @@ struct DetailedArray
         data = std::make_unique<T[]>(size_);
         size = size_;
     }
+    void make_from(DetailedArray<T> &vData)
+    {
+        data = std::move(vData.data);
+        size = vData.size;
+    }
     void make_from(const T *data_, long size_)
     {
         data = std::make_unique<T[]>(size_);
@@ -45,7 +50,8 @@ struct DetailedArray
     }
     void swap(int i1, int i2)
     {
-        if(i1 == i2) return;
+        if (i1 == i2)
+            return;
         T temp = data[i1];
         data[i1] = data[i2];
         data[i2] = temp;

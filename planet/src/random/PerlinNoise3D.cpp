@@ -22,6 +22,9 @@ static const int Perm[256] = {
 static const vec3d G3D[12] = {{1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}};
 static const vec2d G2D[4] = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
+// static double MIN_VAL = 0.0;
+// static double MAX_VAL = 0.0;
+
 PerlinNoise3D::PerlinNoise3D(
     float frequency,
     float lacunarity,
@@ -33,6 +36,11 @@ PerlinNoise3D::PerlinNoise3D(
     mAmplitude = amplitude;
     mPersistence = persistence;
     createPTable();
+}
+
+PerlinNoise3D::~PerlinNoise3D()
+{
+    // std::cout << "P3D MIN_VAL: " << MIN_VAL << ", MAX_VAL: " << MAX_VAL << "\n";
 }
 
 void PerlinNoise3D::createPTable()
@@ -61,11 +69,14 @@ void PerlinNoise3D::shuffle(DetailedArray<int> &table, unsigned int boundary)
 
 double PerlinNoise3D::noise(double x, double y) const
 {
-    int X = util::ffloor(x) & 255;
-    int Y = util::ffloor(y) & 255;
+    int X = util::ffloor(x);
+    int Y = util::ffloor(y);
 
-    x -= util::ffloor(x);
-    y -= util::ffloor(y);
+    x -= X;
+    y -= Y;
+
+    X &= 255;
+    Y &= 255;
 
     // Calculate a set of four hashed gradient indices
     unsigned int gi00 = P[P[X] + Y] % 4;
@@ -73,32 +84,26 @@ double PerlinNoise3D::noise(double x, double y) const
     unsigned int gi10 = P[P[X + 1] + Y] % 4;
     unsigned int gi11 = P[P[X + 1] + Y + 1] % 4;
 
+    vec2d v00 = {x, y};
+    vec2d v01 = {x, y - 1.0};
+    vec2d v10 = {x - 1.0, y};
+    vec2d v11 = {x - 1.0, y - 1.0};
+
     // Get dot product for each corner
-    double d00 = G2D[gi00].dot({x, y});
-    double d01 = G2D[gi01].dot({x, y - 1.0});
-    double d10 = G2D[gi10].dot({x - 1.0, y});
-    double d11 = G2D[gi11].dot({x - 1.0, y - 1.0});
+    double d00 = G2D[gi00].dot(v00);
+    double d01 = G2D[gi01].dot(v01);
+    double d10 = G2D[gi10].dot(v10);
+    double d11 = G2D[gi11].dot(v11);
 
     x = fade(x);
     y = fade(y);
 
-    return interpolate(y, interpolate(x, d00, d10), interpolate(x, d01, d11));
-}
+    double iX0 = interpolate(x, d00, d10);
+    double iX1 = interpolate(x, d01, d11);
 
-double PerlinNoise3D::fractal(size_t octaves, double x, double y) const
-{
-    double frequency = mFrequency;
-    double amplitude = mAmplitude;
-    double ampAcc = amplitude;
-    double noises;
-    for (int i = 0; i < octaves; i++)
-    {
-        noises += noise(x * frequency, y * frequency) * amplitude;
-        frequency *= mLacunarity;
-        amplitude /= mPersistence;
-        ampAcc += amplitude;
-    }
-    return noises / ampAcc;
+    double iY = interpolate(y, iX0, iX1);
+    // std::cout << "noises: " << noises << "\n";
+    return iY;
 }
 
 double PerlinNoise3D::noise(double x, double y, double z) const
@@ -168,17 +173,33 @@ double PerlinNoise3D::noise(double x, double y, double z) const
     return iz;
 }
 
-double PerlinNoise3D::fractal(size_t octaves, double x, double y, double z) const
+double PerlinNoise3D::fractal(int octaves, double x, double y) const
 {
-    double frequency = mFrequency;
-    double amplitude = mAmplitude;
-    double ampAcc = amplitude;
-    double noises;
+    float frequency = mFrequency;
+    float amplitude = mAmplitude;
+    float ampAcc = 0.0f;
+    double noises = 0.0;
     for (int i = 0; i < octaves; i++)
     {
-        noises += noise(x * frequency, y * frequency, z * frequency) * amplitude;
+        noises += amplitude * noise(x * frequency, y * frequency);
         frequency *= mLacunarity;
-        amplitude /= mPersistence;
+        amplitude *= mPersistence;
+        ampAcc += amplitude;
+    }
+    return noises / ampAcc;
+}
+
+double PerlinNoise3D::fractal(int octaves, double x, double y, double z) const
+{
+    float frequency = mFrequency;
+    float amplitude = mAmplitude;
+    float ampAcc = 0.0f;
+    double noises = 0.0;
+    for (int i = 0; i < octaves; i++)
+    {
+        noises += amplitude * noise(x * frequency, y * frequency, z * frequency);
+        frequency *= mLacunarity;
+        amplitude *= mPersistence;
         ampAcc += amplitude;
     }
     return noises / ampAcc;

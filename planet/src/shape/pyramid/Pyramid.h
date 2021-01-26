@@ -14,8 +14,8 @@ private:
     float mOffset = 0.0f, mAngle = 0.0f;
 
 public:
-    glm::vec3 mPos;
-    
+    glm::vec3 mPos = glm::vec3(0.0, 0.0, 0.0);
+
     void createShape();
     void create();
     void update();

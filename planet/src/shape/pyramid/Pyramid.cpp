@@ -48,13 +48,13 @@ void Pyramid::update()
     model = glm::rotate(model, util::toRadians(mAngle), glm::vec3(0.0f, 1.0f, 0.0f));
     // model = glm::rotate(model, util::toRadians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     model = glm::scale(model, glm::vec3(1.0f));
-    mvp = Camera::GET().getViewProjection() * model;
 }
 
 void Pyramid::draw()
 {
+    mvp = Camera::GET().getViewProjection() * model;
     mShader.bind();
-    mShader.setMVP(mvp);
+    mShader.setMat4("mvp", mvp);
     mMesh.drawDefault();
     mShader.unbind();
 }

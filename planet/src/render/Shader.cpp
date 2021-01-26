@@ -25,13 +25,6 @@ void Shader::clear()
 
 GLuint Shader::getProgramID() { return programID; }
 
-GLuint Shader::getMVPID() { return mvpID; }
-
-void Shader::setMVP(glm::mat4 mvp)
-{
-    glUniformMatrix4fv(mvpID, 1, GL_FALSE, glm::value_ptr(mvp));
-}
-
 void Shader::compileShader(const char *vCode, const char *fCode)
 {
     programID = glCreateProgram();

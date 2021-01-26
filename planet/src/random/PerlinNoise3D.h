@@ -6,17 +6,17 @@
 
 class PerlinNoise3D
 {
-
 public:
     PerlinNoise3D(
-        float frequency = 1.00f,
+        float frequency = 1.0f,
         float lacunarity = 2.0f,
-        float amplitude = 2.0f,
+        float amplitude = 1.0f,
         float persistence = 0.5f);
+    ~PerlinNoise3D();
     double noise(double x, double y) const;
     double noise(double x, double y, double z) const;
-    double fractal(size_t octaves, double x, double y) const;
-    double fractal(size_t octaves, double x, double y, double z) const;
+    double fractal(int octaves, double x, double y) const;
+    double fractal(int octaves, double x, double y, double z) const;
 
 private:
     DetailedArray<int> P;
