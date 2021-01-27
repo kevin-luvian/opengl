@@ -4,23 +4,20 @@ unsigned int IcoSphere::findEdgeMid(Lookup &lookup, Vertices &vertices, unsigned
 {
     unsigned int midIndice;
     auto it1 = lookup.find({indice1, indice2});
-    if (it1 == lookup.end())
-    {
-        auto it2 = lookup.find({indice2, indice1});
-        if (it2 == lookup.end())
-        {
-            // not found; create new vertex
-            midIndice = vertices.size();
-            Vertex midVertex = vertices[indice1] + vertices[indice2];
-            midVertex.normalize();
-            vertices.push_back(midVertex);
-        }
-        else
-            midIndice = it2->second;
-    }
-    else
+    auto it2 = lookup.find({indice2, indice1});
+    if (it1 != lookup.end())
         midIndice = it1->second;
-
+    else if (it2 != lookup.end())
+        midIndice = it2->second;
+    else
+    {
+        // not found; create new vertex
+        midIndice = vertices.size();
+        lookup.insert(std::make_pair(std::make_pair(indice1, indice2), midIndice));
+        Vertex midVertex = vertices[indice1] + vertices[indice2];
+        midVertex.normalize();
+        vertices.push_back(midVertex);
+    }
     return midIndice;
 }
 void IcoSphere::subdivideTriangle(const Indice &triangle, Vertices &vertices, Lookup &lookup, Triangles &newSet)
@@ -30,10 +27,10 @@ void IcoSphere::subdivideTriangle(const Indice &triangle, Vertices &vertices, Lo
     {
         mid[i] = findEdgeMid(lookup, vertices, triangle[(i + 1) % 3], triangle[(i + 2) % 3]);
     }
-    newSet.push_back({triangle.left, mid.right, mid.top});
-    newSet.push_back({mid.right, triangle.top, mid.left});
-    newSet.push_back({mid.top, mid.left, triangle.right});
     newSet.push_back(mid);
+    newSet.push_back({triangle.top, mid.right, mid.left});
+    newSet.push_back({mid.right, triangle.left, mid.top});
+    newSet.push_back({mid.left, mid.top, triangle.right});
 }
 void IcoSphere::subdivide(Vertices &vertices, Triangles &triangles, unsigned int depth)
 {

@@ -9,8 +9,8 @@ set(LIB_DIRECTORY lib/)
 
 set(SOURCE_FILES
     src/main.cpp
-    src/glcomponent/Camera.cpp
-    src/glcomponent/Screen.cpp
+    src/screenview/Camera.cpp
+    src/screenview/Screen.cpp
     src/render/Mesh.cpp
     src/render/Shader.cpp
     src/shape/pyramid/Pyramid.cpp

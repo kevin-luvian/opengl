@@ -2,7 +2,7 @@
 
 #include <functional>
 #include "shape/ShapeAttribute.h"
-#include "glcomponent/ScreenState.h"
+#include "screenview/ScreenState.h"
 #include "Shader.h"
 
 // Struct for passing array with length

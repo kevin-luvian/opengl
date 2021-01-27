@@ -70,6 +70,9 @@ bool Screen::setupWindow()
     // set context glfw
     glfwMakeContextCurrent(mWindow);
 
+    // enable culling
+    glEnable(GL_CULL_FACE);
+
     // enable depth
     glEnable(GL_DEPTH_TEST);
 

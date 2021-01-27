@@ -1,4 +1,4 @@
-#include "glcomponent/Screen.h"
+#include "screenview/Screen.h"
 #include "shape/pyramid/Pyramid.h"
 #include "shape/icosahedron/Icosahedron.h"
 #include "shape/sphere/icosphere/IcoSphere.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "glcomponent/Camera.h"
+#include "screenview/Camera.h"
 #include "shape/ShapeClass.h"
 
 class Icosahedron : public ShapeClass
@@ -46,10 +46,10 @@ private:
 
         for (unsigned int i = 0; i < 5; i++)
         {
-            indices[i] = {0, i + 1, (i + 1) % 5 + 1};
+            indices[i] = {0, (i + 1) % 5 + 1, i + 1};
             indices[i + 5] = {i + 1, i + 6, (i + 4) % 5 + 6};
             indices[i + 10] = {i + 1, (i + 1) % 5 + 1, i + 6};
-            indices[i + 15] = {11, i + 6, (i + 4) % 5 + 6};
+            indices[i + 15] = {(i + 4) % 5 + 6, i + 6, 11};
         }
         return indices;
     }

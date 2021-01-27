@@ -1,6 +1,6 @@
 #pragma once
 
-#include "glcomponent/Camera.h"
+#include "screenview/Camera.h"
 #include "shape/ShapeClass.h"
 
 class IcosahedronStatic : public ShapeClass

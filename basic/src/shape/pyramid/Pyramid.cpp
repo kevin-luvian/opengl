@@ -16,8 +16,8 @@ static const Indice indices[6] = {
     {0, 2, 3},
     {0, 3, 4},
     {0, 4, 1},
-    {1, 2, 3},
-    {3, 4, 1}};
+    {1, 3, 2},
+    {3, 1, 4}};
 
 void Pyramid::createShape()
 {
