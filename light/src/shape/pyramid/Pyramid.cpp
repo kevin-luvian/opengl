@@ -1,28 +1,38 @@
 #include "Pyramid.h"
 
-static const char *vShaderPath = "../res/shader/vSimple.vert";
-static const char *fShaderPath = "../res/shader/fSimple.frag";
+static const char *vShaderPath = "../res/shader/vLight.vert";
+static const char *fShaderPath = "../res/shader/fLight.frag";
 
 static const Vertex vertices[5] = {
-    // x y z   s t
+    // x y z
     {0.0f, 1.0f, 0.0f},
     {-1.0f, -1.0f, 1.0f},
     {1.0f, -1.0f, 1.0f},
     {1.0f, -1.0f, -1.0f},
     {-1.0f, -1.0f, -1.0f}};
 
+static const glm::vec3 normals[5] = {
+    // x y z
+    {0.0f, 1.0f, 0.0f},
+    {-1.0f, 0, 1.0f},
+    {1.0f, 0, 1.0f},
+    {1.0f, 0, -1.0f},
+    {-1.0f, 0, -1.0f}};
+
 static const Indice indices[6] = {
     {0, 1, 2},
-    {0, 2, 3},
+    {3, 0, 2},
     {0, 3, 4},
-    {0, 4, 1},
-    {3, 2, 1},
+    {1, 0, 4},
+    {1,3, 2 },
     {1, 4, 3}};
 
 void Pyramid::createShape()
 {
     shape.vertices.make_from(vertices, 5);
     shape.indices.make_from(indices, 6);
+    shape.calculateNormalsFromCenter();
+    shape.createNormalLines();
 }
 
 void Pyramid::create()
@@ -30,7 +40,8 @@ void Pyramid::create()
     createShape();
     mShader.compileFromFile(vShaderPath, fShaderPath);
     mMesh.create(shape);
-    mPos = glm::vec3(0.0f, 0.0f, 0.0f);
+    // mMaterial.setShine(2.0f);
+    // mMaterial.setReflectivity(8.0f);
 }
 
 void Pyramid::update()
@@ -48,13 +59,18 @@ void Pyramid::update()
     model = glm::rotate(model, util::toRadians(mAngle), glm::vec3(0.0f, 1.0f, 0.0f));
     // model = glm::rotate(model, util::toRadians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     model = glm::scale(model, glm::vec3(1.0f));
-    mvp = Camera::GET().getViewProjection() * model;
 }
 
 void Pyramid::draw()
 {
+    auto view = Camera::GET().getView();
+    auto projection = Camera::GET().getProjection();
     mShader.bind();
-    mShader.setMVP(mvp);
-    mMesh.drawDefault();
+    mShader.setMat4("model", model);
+    mShader.setMat4("view", view);
+    mShader.setMat4("projection", projection);
+    mMaterial.use(mShader);
+    mMesh.draw();
     mShader.unbind();
+    shape.drawNormalLines(projection * view * model);
 }

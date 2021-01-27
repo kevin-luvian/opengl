@@ -12,8 +12,10 @@ set(SOURCE_FILES
     src/glcomponent/Camera.cpp
     src/glcomponent/Screen.cpp
     src/render/Mesh.cpp
+    src/render/MeshLighted.cpp
     src/render/Shader.cpp
     src/shape/pyramid/Pyramid.cpp
+    src/shape/voxel/Cube.cpp
     src/shape/sphere/Sphere.cpp
     src/shape/sphere/icosphere/IcoSphere.cpp)
 

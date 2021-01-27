@@ -1,12 +1,15 @@
 #pragma once
 
 #include <map>
+#include <unordered_map>
 #include <vector>
 #include "render/Mesh.h"
+#include "render/MeshLighted.h"
 #include "render/Shader.h"
 #include "shape/ShapeClass.h"
 #include "shape/icosahedron/Icosahedron.h"
 #include "shape/icosahedron/IcosahedronStatic.h"
+#include "render/material/Material.h"
 
 class IcoSphere : ShapeClass
 {
@@ -15,10 +18,11 @@ private:
     using Triangles = std::vector<Indice>;
     using Vertices = std::vector<Vertex>;
 
-    const char *vShaderPath = "../res/shader/vSimple.vert";
-    const char *fShaderPath = "../res/shader/fSimple.frag";
+    const char *vShaderPath = "../res/shader/vLight.vert";
+    const char *fShaderPath = "../res/shader/fLight.frag";
 
-    Mesh mesh;
+    Material material;
+    MeshLighted mesh;
     Shader shader;
 
     void subdivide(Vertices &vertices, Triangles &triangles, unsigned int depth);
@@ -32,6 +36,7 @@ public:
 
     IcoSphere() : mDepth(0) {}
     IcoSphere(unsigned int depth) : mDepth(depth) {}
+    Shader &getShader() { return shader; }
     void createShape();
     void create();
     void draw();

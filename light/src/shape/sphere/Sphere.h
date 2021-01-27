@@ -1,30 +1,26 @@
 #pragma once
 
 #include "glcomponent/Camera.h"
-#include "render/Mesh.h"
+#include "render/MeshLighted.h"
 #include "render/Shader.h"
+#include "render/material/Material.h"
 #include "shape/ShapeClass.h"
 
 class Sphere : public ShapeClass
 {
 private:
-    const char *vShaderPath = "../res/shader/vSimple.vert";
-    const char *fShaderPath = "../res/shader/fSimple.frag";
+    const char *vShaderPath = "../res/shader/vLight.vert";
+    const char *fShaderPath = "../res/shader/fLight.frag";
     Shader shader;
-    Mesh mesh;
+    MeshLighted mesh;
+    Material material;
     unsigned int segment;
-
-    // append top and bottom indices case
-    void appendTBIndices(unsigned int &offset, unsigned int pIndex, unsigned int vIndex);
-
-    // return total count of vertices
-    unsigned int vCount();
 
     void generateVertices();
     void generateIndices();
 
 public:
-    glm::vec3 pos;
+    glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
 
     Sphere() : segment(3) {}
     Sphere(unsigned int count) { setSegment(count); }
@@ -32,7 +28,7 @@ public:
     void createShape();
     void create();
     void draw();
-
+    Shader &getShader() { return shader; }
     void setSegment(unsigned int segment_)
     {
         if (segment_ < 3)

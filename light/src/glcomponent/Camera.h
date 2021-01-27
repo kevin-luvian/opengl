@@ -23,7 +23,10 @@ public:
     void checkKeys();
     void mouseMove(float x, float y);
     void updateScreenSize();
+    glm::mat4 getView();
+    glm::mat4 getProjection();
     glm::mat4 getViewProjection();
+    glm::vec3 getPosition();
 
     static Camera &GET();
 };

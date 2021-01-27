@@ -69,7 +69,7 @@ public:
     {
         auto mvp = Camera::GET().getViewProjection();
         shader.bind();
-        shader.setMVP(mvp);
+        shader.setMat4("mvp", mvp);
         mesh.drawDefault();
         mesh.unbind();
     }

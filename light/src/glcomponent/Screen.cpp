@@ -75,6 +75,7 @@ bool Screen::setupWindow()
 
     // enable culling
     glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 
     // enable MSAA
     glEnable(GL_MULTISAMPLE);

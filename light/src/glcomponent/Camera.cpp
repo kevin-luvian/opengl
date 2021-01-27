@@ -94,9 +94,11 @@ void Camera::updateScreenSize()
     projection = glm::perspective(glm::radians(45.0f), width / height, 0.1f, viewRange);
 }
 
-glm::mat4 Camera::getViewProjection()
+glm::mat4 Camera::getView()
 {
     glm::vec3 camUp = glm::cross(camRight, camFront);
-    glm::mat4 view = glm::lookAt(pos, pos + camFront, camUp);
-    return projection * view;
+    return glm::lookAt(pos, pos + camFront, camUp);
 }
+glm::mat4 Camera::getProjection() { return projection; }
+glm::mat4 Camera::getViewProjection() { return projection * getView(); }
+glm::vec3 Camera::getPosition() { return pos; }

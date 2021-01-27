@@ -27,10 +27,6 @@ void Sphere::generateVertices()
     shape.vertices[offset] = {0.0f, -1.0f, 0.0f}; // bottom vertex
 }
 
-void Sphere::appendTBIndices(unsigned int &offset, unsigned int pIndex, unsigned int vIndex)
-{
-}
-
 void Sphere::generateIndices()
 {
     // mIndices = std::make_unique<unsigned int[]>(iSize());
@@ -77,6 +73,8 @@ void Sphere::createShape()
 {
     generateVertices();
     generateIndices();
+    shape.calculateAverageNormals();
+    shape.createNormalLines();
 }
 
 void Sphere::create()
@@ -84,15 +82,19 @@ void Sphere::create()
     createShape();
     shader.compileFromFile(vShaderPath, fShaderPath);
     mesh.create(shape);
-    pos = glm::vec3(0.0f, 0.0f, 0.0f);
+    material.setShine(32.0f);
+    material.setSpecularIntensity(2.0f);
 }
 
 void Sphere::draw()
 {
-    auto vp = Camera::GET().getViewProjection();
     auto model = glm::translate(glm::mat4(1.0f), pos);
     shader.bind();
-    shader.setMVP(vp * model);
-    mesh.drawDefault();
+    shader.setMat4("model", model);
+    shader.setMat4("view", Camera::GET().getView());
+    shader.setMat4("projection", Camera::GET().getProjection());
+    material.use(shader);
+    mesh.draw();
     shader.unbind();
+    shape.drawNormalLines(Camera::GET().getViewProjection() * model);
 }

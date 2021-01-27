@@ -4,22 +4,20 @@ unsigned int IcoSphere::findEdgeMid(Lookup &lookup, Vertices &vertices, unsigned
 {
     unsigned int midIndice;
     auto it1 = lookup.find({indice1, indice2});
-    if (it1 == lookup.end())
-    {
-        auto it2 = lookup.find({indice2, indice1});
-        if (it2 == lookup.end())
-        {
-            // not found; create new vertex
-            midIndice = vertices.size();
-            Vertex midVertex = vertices[indice1] + vertices[indice2];
-            midVertex.normalize();
-            vertices.push_back(midVertex);
-        }
-        else
-            midIndice = it2->second;
-    }
-    else
+    auto it2 = lookup.find({indice2, indice1});
+    if (it1 != lookup.end())
         midIndice = it1->second;
+    else if (it2 != lookup.end())
+        midIndice = it2->second;
+    else
+    {
+        // not found; create new vertex
+        midIndice = vertices.size();
+        lookup.insert(std::make_pair(std::make_pair(indice1, indice2), midIndice));
+        Vertex midVertex = vertices[indice1] + vertices[indice2];
+        midVertex.normalize();
+        vertices.push_back(midVertex);
+    }
 
     return midIndice;
 }
@@ -30,10 +28,10 @@ void IcoSphere::subdivideTriangle(const Indice &triangle, Vertices &vertices, Lo
     {
         mid[i] = findEdgeMid(lookup, vertices, triangle[(i + 1) % 3], triangle[(i + 2) % 3]);
     }
-    newSet.push_back({mid.top, mid.right, triangle.left});
-    newSet.push_back({mid.left, triangle.top, mid.right});
-    newSet.push_back({triangle.right, mid.left, mid.top});
     newSet.push_back(mid);
+    newSet.push_back({triangle.top, mid.right, mid.left});
+    newSet.push_back({mid.right, triangle.left, mid.top});
+    newSet.push_back({mid.left, mid.top, triangle.right});
 }
 void IcoSphere::subdivide(Vertices &vertices, Triangles &triangles, unsigned int depth)
 {
@@ -66,6 +64,8 @@ void IcoSphere::createShape()
     std::cout << "IcoSphere Created[ depth: " << mDepth << ", vertices: " << vertices.size() << ", indices: " << triangles.size() << " ]" << std::endl;
     shape.vertices.make_from(vertices);
     shape.indices.make_from(triangles);
+    shape.calculateNormalsFromCenter();
+    // shape.createNormalLines(pos);
 }
 void IcoSphere::create()
 {
@@ -76,10 +76,13 @@ void IcoSphere::create()
 }
 void IcoSphere::draw()
 {
-    auto vp = Camera::GET().getViewProjection();
     auto model = glm::translate(glm::mat4(1.0f), pos);
     shader.bind();
-    shader.setMVP(vp * model);
-    mesh.drawDefault();
+    shader.setMat4("model", model);
+    shader.setMat4("view", Camera::GET().getView());
+    shader.setMat4("projection", Camera::GET().getProjection());
+    material.use(shader);
+    mesh.draw();
     shader.unbind();
+    // shape.drawNormalLines(Camera::GET().getViewProjection() * model);
 }

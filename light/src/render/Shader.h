@@ -12,8 +12,10 @@ public:
     // return shader program ID
     GLuint getProgramID();
 
-    // return shader uniform ID for 'mvp'
-    GLuint getMVPID();
+    void setMat4(const char *name, const glm::mat4 &mat) const { glUniformMatrix4fv(glGetUniformLocation(programID, name), 1, GL_FALSE, glm::value_ptr(mat)); }
+    void set4f(const char *name, const glm::vec4 &val) const { glUniform4f(glGetUniformLocation(programID, name), val.x, val.y, val.z, val.w); }
+    void set3f(const char *name, const glm::vec3 &vec) const { glUniform3f(glGetUniformLocation(programID, name), vec.x, vec.y, vec.z); }
+    void set1f(const char *name, float val) const { glUniform1f(glGetUniformLocation(programID, name), val); }
 
     // bind program state
     void bind();
@@ -23,9 +25,6 @@ public:
 
     // clear opengl shader program
     void clear();
-
-    // pass in value to fragment uniform 'mvp'
-    void setMVP(glm::mat4 mvp);
 
     // create shaders from file
     void compileFromFile(const char *vPath, const char *fPath);
