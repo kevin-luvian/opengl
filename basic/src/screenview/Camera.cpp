@@ -1,11 +1,5 @@
 #include "Camera.h"
 
-Camera &Camera::GET()
-{
-    static Camera instance;
-    return instance;
-}
-
 Camera::Camera()
 {
     firstMoveFlag = true;
@@ -52,6 +46,7 @@ void Camera::checkKeys()
     {
         pos -= worldUp * velocity;
     }
+    updateViewProjection();
 }
 
 void Camera::mouseMove(float x, float y)
@@ -85,6 +80,14 @@ void Camera::updateValues()
     camFront = glm::normalize(camFront);
 
     camRight = glm::normalize(glm::cross(camFront, worldUp));
+    camUp = glm::cross(camRight, camFront);
+    updateViewProjection();
+}
+
+void Camera::updateViewProjection()
+{
+    auto view = glm::lookAt(pos, pos + camFront, camUp);
+    viewProjection = projection * view;
 }
 
 void Camera::updateScreenSize()
@@ -92,11 +95,5 @@ void Camera::updateScreenSize()
     float width = ScreenState::Width();
     float height = ScreenState::Height();
     projection = glm::perspective(glm::radians(45.0f), width / height, 0.1f, viewRange);
-}
-
-glm::mat4 Camera::getViewProjection()
-{
-    glm::vec3 camUp = glm::cross(camRight, camFront);
-    glm::mat4 view = glm::lookAt(pos, pos + camFront, camUp);
-    return projection * view;
+    updateViewProjection();
 }

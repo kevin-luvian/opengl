@@ -1,23 +1,19 @@
 #pragma once
 
-#include "screenview/Camera.h"
-#include "render/Mesh.h"
-#include "render/Shader.h"
+#include "draw/renderer/impl/SimpleRenderer.h"
 #include "shape/ShapeClass.h"
 
-class Pyramid : ShapeClass
+class Pyramid : public ShapeClass
 {
 private:
-    Shader mShader;
-    Mesh mMesh;
-    glm::mat4 model, mvp;
+    SimpleRenderer renderer;
+    glm::vec3 pos;
     float mOffset = 0.0f, mAngle = 0.0f;
 
 public:
-    glm::vec3 mPos;
-    
-    void createShape();
+    void setPosition(glm::vec3 position);
+    void createMesh();
     void create();
     void update();
-    void draw();
+    void render();
 };

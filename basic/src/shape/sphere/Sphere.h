@@ -1,38 +1,28 @@
 #pragma once
 
-#include "screenview/Camera.h"
-#include "render/Mesh.h"
-#include "render/Shader.h"
 #include "shape/ShapeClass.h"
+#include "draw/renderer/impl/SimpleRenderer.h"
 
 class Sphere : public ShapeClass
 {
 private:
-    const char *vShaderPath = "../res/shader/vSimple.vert";
-    const char *fShaderPath = "../res/shader/fSimple.frag";
-    Shader shader;
-    Mesh mesh;
+    SimpleRenderer renderer;
+    glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
+    float mAngle = 0.0f;
     unsigned int segment;
-
-    // append top and bottom indices case
-    void appendTBIndices(unsigned int &offset, unsigned int pIndex, unsigned int vIndex);
-
-    // return total count of vertices
-    unsigned int vCount();
 
     void generateVertices();
     void generateIndices();
 
 public:
-    glm::vec3 pos;
-
     Sphere() : segment(3) {}
     Sphere(unsigned int count) { setSegment(count); }
 
-    void createShape();
+    void setPosition(glm::vec3 position);
+    void createMesh();
     void create();
-    void draw();
-
+    void update();
+    void render();
     void setSegment(unsigned int segment_)
     {
         if (segment_ < 3)

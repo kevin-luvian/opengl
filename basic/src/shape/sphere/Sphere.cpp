@@ -8,8 +8,8 @@ void Sphere::generateVertices()
     float x, y, z;
     int offset = 0;
 
-    shape.vertices.make_empty(verticesSize());
-    shape.vertices[offset++] = {0.0f, 1.0f, 0.0f}; // top vertex
+    mesh.vertices.make_empty(verticesSize());
+    mesh.vertices[offset++].pos = {0.0f, 1.0f, 0.0f}; // top vertex
     for (int i = 1; i < segment - 1; i++)
     {
         curRadY = util::toRadians(degY * i);
@@ -21,24 +21,16 @@ void Sphere::generateVertices()
             curRadX = util::toRadians(degX * j);
             x = cos(curRadX) * len; // Adjacent of degX
             z = sin(curRadX) * len; // Opposite of degX
-            shape.vertices[offset++] = {x, y, z};
+            mesh.vertices[offset++].pos = {x, y, z};
         }
     }
-    shape.vertices[offset] = {0.0f, -1.0f, 0.0f}; // bottom vertex
-}
-
-void Sphere::appendTBIndices(unsigned int &offset, unsigned int pIndex, unsigned int vIndex)
-{
-    for (int i = 0; i < segment; i++)
-    {
-        shape.indices[offset++] = {pIndex, vIndex + i, ((i + 1) % segment) + vIndex};
-    }
+    mesh.vertices[offset].pos = {0.0f, -1.0f, 0.0f}; // bottom vertex
 }
 
 void Sphere::generateIndices()
 {
     // mIndices = std::make_unique<unsigned int[]>(iSize());
-    shape.indices.make_empty(indicesSize());
+    mesh.indices.make_empty(indicesSize());
 
     int start;
     unsigned int offset = 0;
@@ -49,7 +41,7 @@ void Sphere::generateIndices()
     unsigned int startI = 1;
     for (int i = 0; i < segment; i++)
     {
-        shape.indices[offset++] = {((i + 1) % segment) + startI, startI + i, pointI};
+        mesh.indices[offset++] = {((i + 1) % segment) + startI, startI + i, pointI};
     }
 
     // push mid triangles
@@ -61,10 +53,8 @@ void Sphere::generateIndices()
             p1 = start + j;
             p2 = ((j + 1) % segment) + start;
             p3 = p1 + segment;
-            shape.indices[offset++] = {p1, p2, p3};
-            shape.indices[offset++] = {p2, p2 + segment, p3};
-            // pushIndice(offset, p1, p2, p3);
-            // pushIndice(offset,);
+            mesh.indices[offset++] = {p1, p2, p3};
+            mesh.indices[offset++] = {p2, p2 + segment, p3};
         }
     }
 
@@ -73,11 +63,17 @@ void Sphere::generateIndices()
     startI = verticesSize() - 1 - segment;
     for (int i = 0; i < segment; i++)
     {
-        shape.indices[offset++] = {pointI, startI + i, ((i + 1) % segment) + startI};
+        mesh.indices[offset++] = {pointI, startI + i, ((i + 1) % segment) + startI};
     }
 }
 
-void Sphere::createShape()
+void Sphere::setPosition(glm::vec3 position)
+{
+    pos = position;
+    model = glm::translate(glm::mat4(1.0), pos);
+}
+
+void Sphere::createMesh()
 {
     generateVertices();
     generateIndices();
@@ -85,18 +81,13 @@ void Sphere::createShape()
 
 void Sphere::create()
 {
-    createShape();
-    shader.compileFromFile(vShaderPath, fShaderPath);
-    mesh.create(shape);
-    pos = glm::vec3(0.0f, 0.0f, 0.0f);
+    createMesh();
+    renderer.create(mesh);
 }
 
-void Sphere::draw()
+void Sphere::update() {}
+
+void Sphere::render()
 {
-    auto vp = Camera::GET().getViewProjection();
-    auto model = glm::translate(glm::mat4(1.0f), pos);
-    shader.bind();
-    shader.setMVP(vp * model);
-    mesh.drawDefault();
-    shader.unbind();
+    renderer.draw();
 }

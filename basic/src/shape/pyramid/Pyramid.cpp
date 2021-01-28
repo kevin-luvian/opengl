@@ -1,15 +1,12 @@
 #include "Pyramid.h"
 
-static const char *vShaderPath = "../res/shader/vSimple.vert";
-static const char *fShaderPath = "../res/shader/fSimple.frag";
-
 static const Vertex vertices[5] = {
     // x y z   s t
-    {0.0f, 1.0f, 0.0f},
-    {-1.0f, -1.0f, 1.0f},
-    {1.0f, -1.0f, 1.0f},
-    {1.0f, -1.0f, -1.0f},
-    {-1.0f, -1.0f, -1.0f}};
+    {glm::vec3(0.0f, 1.0f, 0.0f), glm::vec4(0)},
+    {glm::vec3(-1.0f, -1.0f, 1.0f), glm::vec4(0)},
+    {glm::vec3(1.0f, -1.0f, 1.0f), glm::vec4(0)},
+    {glm::vec3(1.0f, -1.0f, -1.0f), glm::vec4(0)},
+    {glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec4(0)}};
 
 static const Indice indices[6] = {
     {0, 1, 2},
@@ -19,18 +16,21 @@ static const Indice indices[6] = {
     {1, 3, 2},
     {3, 1, 4}};
 
-void Pyramid::createShape()
+void Pyramid::createMesh()
 {
-    shape.vertices.make_from(vertices, 5);
-    shape.indices.make_from(indices, 6);
+    mesh.vertices.make_from(vertices, 5);
+    mesh.indices.make_from(indices, 6);
 }
 
 void Pyramid::create()
 {
-    createShape();
-    mShader.compileFromFile(vShaderPath, fShaderPath);
-    mMesh.create(shape);
-    mPos = glm::vec3(0.0f, 0.0f, 0.0f);
+    createMesh();
+    renderer.create(mesh);
+}
+
+void Pyramid::setPosition(glm::vec3 position)
+{
+    pos = position;
 }
 
 void Pyramid::update()
@@ -38,23 +38,17 @@ void Pyramid::update()
     // offset
     mOffset += 0.001f;
     mAngle += 1.0f;
-    // sSize += 0.001f;
 
     // reset to identity matrix
     model = glm::mat4(1.0f);
 
     // do transformation in reverse order
-    model = glm::translate(model, mPos);
+    model = glm::translate(model, pos);
     model = glm::rotate(model, util::toRadians(mAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-    // model = glm::rotate(model, util::toRadians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     model = glm::scale(model, glm::vec3(1.0f));
-    mvp = Camera::GET().getViewProjection() * model;
 }
 
-void Pyramid::draw()
+void Pyramid::render()
 {
-    mShader.bind();
-    mShader.setMVP(mvp);
-    mMesh.drawDefault();
-    mShader.unbind();
+    renderer.draw();
 }
