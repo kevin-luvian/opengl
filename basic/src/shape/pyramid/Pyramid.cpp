@@ -2,11 +2,11 @@
 
 static const Vertex vertices[5] = {
     // x y z   s t
-    {glm::vec3(0.0f, 1.0f, 0.0f), glm::vec4(0)},
-    {glm::vec3(-1.0f, -1.0f, 1.0f), glm::vec4(0)},
-    {glm::vec3(1.0f, -1.0f, 1.0f), glm::vec4(0)},
-    {glm::vec3(1.0f, -1.0f, -1.0f), glm::vec4(0)},
-    {glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec4(0)}};
+    {glm::vec3(0.0f, 1.0f, 0.0f)},
+    {glm::vec3(-1.0f, -1.0f, 1.0f)},
+    {glm::vec3(1.0f, -1.0f, 1.0f)},
+    {glm::vec3(1.0f, -1.0f, -1.0f)},
+    {glm::vec3(-1.0f, -1.0f, -1.0f)}};
 
 static const Indice indices[6] = {
     {0, 1, 2},
@@ -20,12 +20,16 @@ void Pyramid::createMesh()
 {
     mesh.vertices.make_from(vertices, 5);
     mesh.indices.make_from(indices, 6);
+    mesh.calculateAverageNormals();
 }
 
 void Pyramid::create()
 {
     createMesh();
-    renderer.create(mesh);
+    if (renderer.get() == nullptr)
+        std::cout << "no attached renderer";
+    renderer->create(mesh);
+    mesh.vertices.print();
 }
 
 void Pyramid::setPosition(glm::vec3 position)
@@ -50,5 +54,5 @@ void Pyramid::update()
 
 void Pyramid::render()
 {
-    renderer.draw();
+    renderer->draw();
 }

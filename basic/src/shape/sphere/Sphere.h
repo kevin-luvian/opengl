@@ -1,12 +1,12 @@
 #pragma once
 
 #include "shape/ShapeClass.h"
-#include "draw/renderer/impl/SimpleRenderer.h"
+#include "draw/renderer/Renderer.h"
 
 class Sphere : public ShapeClass
 {
 private:
-    SimpleRenderer renderer;
+    typedef ShapeClass inherited;
     glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
     float mAngle = 0.0f;
     unsigned int segment;

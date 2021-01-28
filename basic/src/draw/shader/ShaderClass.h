@@ -46,19 +46,22 @@ public:
     }
 
     // bind program state
-    void bind() const { glUseProgram(programID); }
+    virtual void bind() { glUseProgram(programID); }
 
     // unbind program state
-    void unbind() const { glUseProgram(0); }
+    virtual void unbind() { glUseProgram(0); }
 
     // clear opengl shader program
-    virtual void clear() const
+    virtual void clear()
     {
         if (programID != 0)
             glDeleteProgram(programID);
+        programID = 0;
     }
 
 protected:
+    unsigned int programID;
+
     // create shaders from file
     void compileFromFile(const char *vPath, const char *fPath)
     {
@@ -110,8 +113,6 @@ protected:
     }
 
 private:
-    unsigned int programID;
-
     // add shader to opengl state
     void addShader(const char *shaderCode, GLenum shaderType)
     {

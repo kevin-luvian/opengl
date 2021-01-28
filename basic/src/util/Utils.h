@@ -30,4 +30,16 @@ namespace util
         //      y  = y * ( 1.5 - ( x2 * y * y ) );   // 2nd iteration, this can be removed
         return y;
     }
+
+    static float min(float a, float b)
+    {
+        if (a < b)
+            return a;
+        return b;
+    }
+
+    static float min(float a, float b, float c)
+    {
+        return min(a, min(b, c));
+    }
 } // namespace util

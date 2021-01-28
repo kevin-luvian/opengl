@@ -86,7 +86,7 @@ void Camera::updateValues()
 
 void Camera::updateViewProjection()
 {
-    auto view = glm::lookAt(pos, pos + camFront, camUp);
+    view = glm::lookAt(pos, pos + camFront, camUp);
     viewProjection = projection * view;
 }
 

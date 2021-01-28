@@ -6,7 +6,10 @@
 #include <unordered_map>
 #include "draw/shader/ShaderClass.h"
 #include "draw/shader/ShaderManager.h"
+#include "draw/renderer/RendererManager.h"
 #include "shape/ShapeClass.h"
+#include "light/Light.h"
+#include "light/impl/DirectionalLight.h"
 
 class Scene
 {
@@ -23,6 +26,8 @@ private:
 public:
     ShaderManager mSManager;
     std::vector<shape_pair> shapePair;
+    std::unique_ptr<DirectionalLight> globalLight;
+    // std::vector<Light *> pointLights; TODO
 
     Scene() {}
     virtual ~Scene() {}
@@ -39,10 +44,17 @@ public:
             pair.shape->create();
         }
         mSManager.createShaders();
+        if (globalLight.get() != nullptr)
+            mSManager.getLightShader()->setDirectionalLightUniforms(globalLight.get());
     }
     void addShape(ShapeClass *shape, Enum::ShaderType sType)
     {
+        shape->attachRenderer(RendererManager::CreateRendererFromShaderType(sType));
         shapePair.push_back({shape, sType});
+    }
+    void addGlobalLight(DirectionalLight &light)
+    {
+        globalLight = std::make_unique<DirectionalLight>(light);
     }
     void sortShapeShaders()
     {
@@ -74,6 +86,7 @@ public:
             shader->attachShape(curShape);
             curShape->render();
             shape_itr++;
+            curShaderType = shapePair[shape_itr].type;
         }
     }
 };

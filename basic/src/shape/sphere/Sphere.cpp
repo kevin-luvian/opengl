@@ -77,17 +77,21 @@ void Sphere::createMesh()
 {
     generateVertices();
     generateIndices();
+    mesh.createVerticesColourFromPos();
+    mesh.calculateAverageNormals();
 }
 
 void Sphere::create()
 {
     createMesh();
-    renderer.create(mesh);
+    if (renderer.get() == nullptr)
+        std::cout << "no attached renderer";
+    renderer->create(mesh);
 }
 
 void Sphere::update() {}
 
 void Sphere::render()
 {
-    renderer.draw();
+    renderer->draw();
 }

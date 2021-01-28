@@ -4,6 +4,7 @@
 #include "draw/shader/ShaderClass.h"
 #include "draw/shader/impl/SimpleShader.h"
 #include "scene/MainScene.h"
+#include "light/Light.h"
 
 MainScene scene;
 
