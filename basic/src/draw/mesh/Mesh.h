@@ -21,6 +21,20 @@ public:
             vertices[i].createColourFromPos();
         }
     }
+    void createUniformColours(glm::vec4 colour)
+    {
+        for (int i = 0; i < vertices.size; i++)
+        {
+            vertices[i].colour = colour;
+        }
+    }
+    void calculateOriginNormals()
+    {
+        for (int i = 0; i < vertices.size; i++)
+        {
+            vertices[i].normal = glm::normalize(vertices[i].pos);
+        }
+    }
     void calculateAverageNormals()
     {
         glm::vec3 vLeft, vRight, vTop, vSub1, vSub2;

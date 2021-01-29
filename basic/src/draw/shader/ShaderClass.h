@@ -44,6 +44,19 @@ public:
     {
         glUniform1f(getUniformLocation(name), val);
     }
+    void set1i(std::string name, int val)
+    {
+        glUniform1i(getUniformLocation(name), val);
+    }
+
+    void set3fnl(std::string name, const glm::vec3 &vec)
+    {
+        glUniform3f(glGetUniformLocation(programID, name.c_str()), vec.x, vec.y, vec.z);
+    }
+    void set1fnl(std::string name, float val)
+    {
+        glUniform1f(glGetUniformLocation(programID, name.c_str()), val);
+    }
 
     // bind program state
     virtual void bind() { glUseProgram(programID); }
@@ -80,6 +93,7 @@ protected:
     // create shaders from chars
     void compileShader(const char *vCode, const char *fCode)
     {
+        BENCHMARK_PROFILE();
         programID = glCreateProgram();
         if (!programID)
         {

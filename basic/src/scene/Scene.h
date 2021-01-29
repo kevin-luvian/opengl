@@ -10,31 +10,32 @@
 #include "shape/ShapeClass.h"
 #include "light/Light.h"
 #include "light/impl/DirectionalLight.h"
+#include "light/impl/PointLight.h"
+#include "light/impl/ShapedPointLight.h"
 
 class Scene
 {
 private:
-    // TODO
-    // Global light
-    // point lights
     struct shape_pair
     {
         ShapeClass *shape;
         Enum::ShaderType type;
     };
 
-public:
+protected:
     ShaderManager mSManager;
     std::vector<shape_pair> shapePair;
     std::unique_ptr<DirectionalLight> globalLight;
-    // std::vector<Light *> pointLights; TODO
+    std::vector<PointLight *> pointLights;
 
+public:
     Scene() {}
     virtual ~Scene() {}
 
     virtual void setprops() = 0;
-    virtual void play() = 0;
-    virtual void prepare()
+    virtual void onPrepare() = 0;
+    virtual void onPlay() = 0;
+    void prepare()
     {
         BENCHMARK_PROFILE();
         setprops();
@@ -45,16 +46,62 @@ public:
         }
         mSManager.createShaders();
         if (globalLight.get() != nullptr)
-            mSManager.getLightShader()->setDirectionalLightUniforms(globalLight.get());
+            mSManager.getLightShader()->attachDirectionalLight(globalLight.get());
+        else
+            globalLight = mSManager.getLightShader()->attachEmptyDirectionalLight();
+        updatePointLights();
+        onPrepare();
     }
+    void play()
+    {
+        BENCHMARK_PROFILE();
+        updatePointLights();
+
+        Enum::ShaderType type;
+        ShaderClass *shader;
+        int size = static_cast<int>(Enum::ShaderType::Count);
+        for (int i = 0; i < size; i++)
+        {
+            type = Enum::AllShaderType[i];
+            shader = mSManager.getShader(type);
+            shader->bind();
+            drawShapes(type, shader);
+            shader->unbind();
+        }
+
+        onPlay();
+    }
+    void updatePointLights()
+    {
+        if (pointLights.size() > 0)
+        {
+            sortNearestPointLight();
+            mSManager.getLightShader()->attachPointLights(pointLights);
+        }
+    }
+
     void addShape(ShapeClass *shape, Enum::ShaderType sType)
     {
         shape->attachRenderer(RendererManager::CreateRendererFromShaderType(sType));
         shapePair.push_back({shape, sType});
     }
-    void addGlobalLight(DirectionalLight &light)
+    void addGlobalLight(DirectionalLight *light) { globalLight = std::unique_ptr<DirectionalLight>(light); }
+    void addPointLight(PointLight *light) { pointLights.push_back(light); }
+    void addShapedPointLight(ShapedPointLight *light)
     {
-        globalLight = std::make_unique<DirectionalLight>(light);
+        auto renderer = RendererManager::CreateRendererFromShaderType(light->getShaderType());
+        light->getShape()->attachRenderer(renderer);
+        shapePair.push_back({light->getShape(), light->getShaderType()});
+        pointLights.push_back(light);
+    }
+
+    void sortNearestPointLight()
+    {
+        BENCHMARK_PROFILE();
+        auto cmp = [](PointLight const *a, PointLight const *b) {
+            return a->getManhattanDistanceToCamera() < b->getManhattanDistanceToCamera();
+        };
+        std::sort(pointLights.begin(), pointLights.end(), cmp);
     }
     void sortShapeShaders()
     {
@@ -73,8 +120,7 @@ public:
         Enum::ShaderType curShaderType = shapePair[shape_itr].type;
         while (shape_itr < shapePair.size() && curShaderType != type)
         {
-            shape_itr++;
-            curShaderType = shapePair[shape_itr].type;
+            curShaderType = shapePair[++shape_itr].type;
         }
 
         // iterate through shader block
@@ -85,8 +131,7 @@ public:
             curShape->update();
             shader->attachShape(curShape);
             curShape->render();
-            shape_itr++;
-            curShaderType = shapePair[shape_itr].type;
+            curShaderType = shapePair[++shape_itr].type;
         }
     }
 };

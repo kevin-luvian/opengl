@@ -14,6 +14,7 @@ public:
     void setMVP(glm::mat4 &mvp) { setMat4(ShaderUniform::VSIMPLE_MVP, mvp); }
     void attachShape(ShapeClass *shape)
     {
+        BENCHMARK_PROFILE();
         auto viewProjection = Camera::ViewProjection();
         auto model = shape->getModel();
         setMat4(ShaderUniform::VSIMPLE_MVP, viewProjection * model);

@@ -2,6 +2,7 @@
 
 void Sphere::generateVertices()
 {
+    BENCHMARK_PROFILE();
     double degX = 360.0 / segment;
     double degY = 180.0 / (segment - 1);
     double len, curRadY, curRadX;
@@ -29,6 +30,7 @@ void Sphere::generateVertices()
 
 void Sphere::generateIndices()
 {
+    BENCHMARK_PROFILE();
     // mIndices = std::make_unique<unsigned int[]>(iSize());
     mesh.indices.make_empty(indicesSize());
 
@@ -70,14 +72,17 @@ void Sphere::generateIndices()
 void Sphere::setPosition(glm::vec3 position)
 {
     pos = position;
-    model = glm::translate(glm::mat4(1.0), pos);
 }
 
 void Sphere::createMesh()
 {
+    BENCHMARK_PROFILE();
     generateVertices();
     generateIndices();
-    mesh.createVerticesColourFromPos();
+    if (mColour == glm::vec4(0))
+        mesh.createVerticesColourFromPos();
+    else
+        mesh.createUniformColours(mColour);
     mesh.calculateAverageNormals();
 }
 
@@ -89,7 +94,16 @@ void Sphere::create()
     renderer->create(mesh);
 }
 
-void Sphere::update() {}
+void Sphere::update()
+{
+    if (shouldUpdate)
+    {
+        model = glm::translate(glm::mat4(1.0), pos);
+        model = glm::rotate(model, mAngle, glm::vec3(0.0, 1.0, 0.0));
+        model = glm::scale(model, glm::vec3(mSize));
+        shouldUpdate = false;
+    }
+}
 
 void Sphere::render()
 {

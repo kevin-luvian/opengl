@@ -15,6 +15,7 @@ public:
     virtual void unbindLayouts(){};
     virtual void create(Mesh &mesh)
     {
+        BENCHMARK_PROFILE();
         inherited::create(mesh, []() {});
     };
 };

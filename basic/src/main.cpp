@@ -1,10 +1,6 @@
 #include "screenview/Screen.h"
-#include "shape/pyramid/Pyramid.h"
-#include "draw/shader/ShaderManager.h"
-#include "draw/shader/ShaderClass.h"
-#include "draw/shader/impl/SimpleShader.h"
 #include "scene/MainScene.h"
-#include "light/Light.h"
+#include "light/impl/PointLight.h"
 
 MainScene scene;
 

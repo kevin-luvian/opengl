@@ -11,6 +11,7 @@ protected:
     std::unique_ptr<Material> material;
     Mesh mesh;
     glm::mat4 model = glm::mat4(1.0f);
+    glm::vec3 pos = glm::vec3(0);
 
 public:
     ShapeClass()
@@ -19,6 +20,8 @@ public:
     }
     virtual ~ShapeClass() {}
     virtual glm::mat4 getModel() { return model; }
+    virtual glm::vec3 getPosition() { return pos; }
+    virtual void setPosition(glm::vec3 pos_) { pos = pos_; }
     virtual Material &getMaterial() { return *material.get(); }
     virtual Mesh &getMesh() { return mesh; };
     virtual void attachMaterial(Material *material_) { material = std::unique_ptr<Material>(material_); }

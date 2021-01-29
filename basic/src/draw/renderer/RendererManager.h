@@ -1,6 +1,6 @@
 #pragma once
 
-#include "draw/shader/ShaderManager.h"
+#include "draw/shader/ShaderEnum.h"
 #include "impl/SimpleRenderer.h"
 #include "impl/LightRenderer.h"
 #include "Renderer.h"
@@ -23,6 +23,7 @@ public:
     // returns raw pointer of new Renderer. be careful for memmory leaks
     static Renderer *CreateRendererFromType(Enum::RendererType type)
     {
+        BENCHMARK_PROFILE();
         if (type == Enum::RendererType::Simple)
             return (Renderer *)new SimpleRenderer();
         if (type == Enum::RendererType::Light)
@@ -32,6 +33,7 @@ public:
 
     static Renderer *CreateRendererFromShaderType(Enum::ShaderType type)
     {
+        BENCHMARK_PROFILE();
         if (type == Enum::ShaderType::Simple)
             return CreateRendererFromType(Enum::RendererType::Simple);
         if (type == Enum::ShaderType::Light)

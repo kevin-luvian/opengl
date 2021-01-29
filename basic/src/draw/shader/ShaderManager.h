@@ -1,20 +1,9 @@
 #pragma once
 
+#include "ShaderEnum.h"
 #include "ShaderClass.h"
 #include "impl/SimpleShader.h"
 #include "impl/LightShader.h"
-
-namespace Enum
-{
-    enum class ShaderType
-    {
-        Simple = 0,
-        Light = 1,
-        Count = 2
-    };
-
-    static const ShaderType AllShaderType[] = {Enum::ShaderType::Simple, Enum::ShaderType::Light};
-} // namespace Enum
 
 class ShaderManager
 {

@@ -20,7 +20,9 @@ void Pyramid::createMesh()
 {
     mesh.vertices.make_from(vertices, 5);
     mesh.indices.make_from(indices, 6);
-    mesh.calculateAverageNormals();
+    // mesh.calculateAverageNormals();
+    mesh.calculateOriginNormals();
+    mesh.createUniformColours(mColour);
 }
 
 void Pyramid::create()
@@ -29,7 +31,6 @@ void Pyramid::create()
     if (renderer.get() == nullptr)
         std::cout << "no attached renderer";
     renderer->create(mesh);
-    mesh.vertices.print();
 }
 
 void Pyramid::setPosition(glm::vec3 position)
@@ -49,7 +50,7 @@ void Pyramid::update()
     // do transformation in reverse order
     model = glm::translate(model, pos);
     model = glm::rotate(model, util::toRadians(mAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(1.0f));
+    model = glm::scale(model, glm::vec3(mSize));
 }
 
 void Pyramid::render()

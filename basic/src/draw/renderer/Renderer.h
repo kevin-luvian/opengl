@@ -23,6 +23,7 @@ public:
     virtual void create(Mesh &mesh) = 0;
     virtual void draw()
     {
+        BENCHMARK_PROFILE();
         bind();
         bool *keys = ScreenState::KeyState();
         glPointSize(1.0f);
@@ -40,6 +41,7 @@ public:
 protected:
     void create(Mesh &mesh, std::function<void()> createOther)
     {
+        BENCHMARK_PROFILE();
         IndicesSize = mesh.indices.size * Indice::count();
 
         // generate vertex array

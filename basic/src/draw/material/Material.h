@@ -3,7 +3,7 @@
 class Material
 {
 public:
-    float mSpecularIntensity = 0.8f;
+    float mSpecularIntensity = 2.2f;
     float mShine = 8.0f;
 
     Material() {}
