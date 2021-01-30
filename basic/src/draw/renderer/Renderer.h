@@ -1,6 +1,6 @@
 #pragma once
 
-#include "draw/mesh/Mesh.h"
+#include "mesh/Mesh.h"
 #include "screenview/ScreenState.h"
 
 class Renderer

@@ -7,26 +7,17 @@
 #include "draw/shader/ShaderClass.h"
 #include "draw/shader/ShaderManager.h"
 #include "draw/renderer/RendererManager.h"
-#include "shape/ShapeClass.h"
-#include "light/Light.h"
-#include "light/impl/DirectionalLight.h"
-#include "light/impl/PointLight.h"
-#include "light/impl/ShapedPointLight.h"
+#include "object/Object.h"
+#include "light/Lights.h"
 
 class Scene
 {
-private:
-    struct shape_pair
-    {
-        ShapeClass *shape;
-        Enum::ShaderType type;
-    };
-
 protected:
     ShaderManager mSManager;
-    std::vector<shape_pair> shapePair;
+    std::vector<Object *> rObjects;
     std::unique_ptr<DirectionalLight> globalLight;
     std::vector<PointLight *> pointLights;
+    std::vector<SpotLight *> spotLights;
 
 public:
     Scene() {}
@@ -39,23 +30,25 @@ public:
     {
         BENCHMARK_PROFILE();
         setprops();
-        sortShapeShaders();
-        for (const auto &pair : shapePair)
+        for (const auto &obj : rObjects)
         {
-            pair.shape->create();
+            obj->create();
         }
         mSManager.createShaders();
         if (globalLight.get() != nullptr)
             mSManager.getLightShader()->attachDirectionalLight(globalLight.get());
         else
             globalLight = mSManager.getLightShader()->attachEmptyDirectionalLight();
-        updatePointLights();
+        updateLocalLights();
+        sortShapeShaders();
         onPrepare();
     }
     void play()
     {
         BENCHMARK_PROFILE();
-        updatePointLights();
+
+        onPlay();
+        updateLocalLights();
 
         Enum::ShaderType type;
         ShaderClass *shader;
@@ -65,73 +58,82 @@ public:
             type = Enum::AllShaderType[i];
             shader = mSManager.getShader(type);
             shader->bind();
-            drawShapes(type, shader);
+            shader->setupUniforms();
+            drawObjects(type, shader);
             shader->unbind();
         }
-
-        onPlay();
     }
-    void updatePointLights()
+    void updateLocalLights()
     {
+        // can be optimized
         if (pointLights.size() > 0)
         {
             sortNearestPointLight();
             mSManager.getLightShader()->attachPointLights(pointLights);
         }
+        if (spotLights.size() > 0)
+        {
+            sortNearestSpotLight();
+            mSManager.getLightShader()->attachSpotLights(spotLights);
+        }
     }
 
-    void addShape(ShapeClass *shape, Enum::ShaderType sType)
+    void addObject(Object *rObject)
     {
-        shape->attachRenderer(RendererManager::CreateRendererFromShaderType(sType));
-        shapePair.push_back({shape, sType});
+        // rObject->attachRenderer(RendererManager::CreateRendererFromShaderType(rObject->getShaderType()));
+        rObjects.push_back(rObject);
     }
     void addGlobalLight(DirectionalLight *light) { globalLight = std::unique_ptr<DirectionalLight>(light); }
     void addPointLight(PointLight *light) { pointLights.push_back(light); }
     void addShapedPointLight(ShapedPointLight *light)
     {
-        auto renderer = RendererManager::CreateRendererFromShaderType(light->getShaderType());
-        light->getShape()->attachRenderer(renderer);
-        shapePair.push_back({light->getShape(), light->getShaderType()});
-        pointLights.push_back(light);
+        // auto renderer = RendererManager::CreateRendererFromShaderType(light->getShaderType());
+        // light->getObject()->attachRenderer(renderer);
+        addObject(light->getObject());
+        addPointLight(light);
     }
+    void addSpotLight(SpotLight *light) { spotLights.push_back(light); }
 
+    void sortNearestSpotLight()
+    {
+        std::sort(spotLights.begin(), spotLights.end(), PointLight::DistanceComparer);
+    }
     void sortNearestPointLight()
     {
-        BENCHMARK_PROFILE();
-        auto cmp = [](PointLight const *a, PointLight const *b) {
-            return a->getManhattanDistanceToCamera() < b->getManhattanDistanceToCamera();
-        };
-        std::sort(pointLights.begin(), pointLights.end(), cmp);
+        std::sort(pointLights.begin(), pointLights.end(), PointLight::DistanceComparer);
     }
     void sortShapeShaders()
     {
         BENCHMARK_PROFILE();
-        auto cmp = [](shape_pair const &a, shape_pair const &b) {
-            return a.type < b.type;
-        };
-        std::sort(shapePair.begin(), shapePair.end(), cmp);
+        std::sort(rObjects.begin(), rObjects.end(), Renderable::ShaderTypeComparer);
     }
-    void drawShapes(Enum::ShaderType type, ShaderClass *shader)
+    static void printObjectVector(std::vector<Object *> objects)
+    {
+        for (int i = 0; i < objects.size(); i++)
+        {
+            auto cType = objects[i]->getShaderType();
+            std::cout << "idx: " << i << "type: " << static_cast<int>(cType) << "\n";
+        }
+    }
+    void drawObjects(Enum::ShaderType type, ShaderClass *shader)
     {
         BENCHMARK_PROFILE();
-        unsigned int shape_itr = 0;
+        unsigned int obj_itr = 0;
 
         // find the start of shader block
-        Enum::ShaderType curShaderType = shapePair[shape_itr].type;
-        while (shape_itr < shapePair.size() && curShaderType != type)
+        while (obj_itr < rObjects.size() && rObjects[obj_itr]->getShaderType() != type)
         {
-            curShaderType = shapePair[++shape_itr].type;
+            obj_itr++;
         }
 
         // iterate through shader block
-        ShapeClass *curShape;
-        while (shape_itr < shapePair.size() && curShaderType == type)
+        Object *curObj;
+        while (obj_itr < rObjects.size() && rObjects[obj_itr]->getShaderType() == type)
         {
-            curShape = shapePair[shape_itr].shape;
-            curShape->update();
-            shader->attachShape(curShape);
-            curShape->render();
-            curShaderType = shapePair[++shape_itr].type;
+            curObj = rObjects[obj_itr++];
+            curObj->update();
+            shader->attachObject(curObj);
+            curObj->render();
         }
     }
 };

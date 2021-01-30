@@ -11,8 +11,7 @@ set(SOURCE_FILES
     src/main.cpp
     src/screenview/Camera.cpp
     src/screenview/Screen.cpp
-    src/shape/pyramid/Pyramid.cpp
-    src/shape/sphere/Sphere.cpp)
+    src/mesh/impl/Sphere.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

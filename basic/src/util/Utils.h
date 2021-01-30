@@ -10,10 +10,9 @@ namespace util
     // Utility function to calculate degree angles, overflow unsafe.
     static float toDegrees(float radianAngle) { return radianAngle * 180.0f / PI; }
 
-    // Utility function to map value from a range to another range
+    // Utility function to map value from a range to another range. Formula: Y = (X-A)/(B-A) * (D-C) + C
     static float mapBetweenFloat(float value, float from_start, float from_end, float to_start, float to_end)
     {
-        // Y = (X-A)/(B-A) * (D-C) + C
         return ((value - from_start) / (from_end - from_start) * (to_end - to_start)) + to_start;
     }
 

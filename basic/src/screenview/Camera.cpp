@@ -3,6 +3,7 @@
 Camera::Camera()
 {
     firstMoveFlag = true;
+    pos = glm::vec3(0.0f, 0.0f, 0.0f);
     initiate();
 }
 

@@ -31,6 +31,7 @@ public:
         return nullptr;
     }
 
+    // returns raw pointer of new Renderer. be careful for memmory leaks
     static Renderer *CreateRendererFromShaderType(Enum::ShaderType type)
     {
         BENCHMARK_PROFILE();

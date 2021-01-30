@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
-#include "shape/ShapeClass.h"
+#include "object/Object.h"
 
 class ShaderClass
 {
@@ -17,7 +17,8 @@ public:
     unsigned int getProgramID() const { return programID; };
 
     virtual void compile() = 0;
-    virtual void attachShape(ShapeClass *shape) = 0;
+    virtual void attachObject(Object *object) = 0;
+    virtual void setupUniforms() = 0;
 
     unsigned int getUniformLocation(std::string name)
     {

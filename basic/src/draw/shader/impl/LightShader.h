@@ -3,8 +3,7 @@
 #include "draw/shader/ShaderUniform.h"
 #include "draw/shader/ShaderClass.h"
 #include "screenview/Camera.h"
-#include "light/impl/DirectionalLight.h"
-#include "light/impl/PointLight.h"
+#include "light/Lights.h"
 #include "draw/material/Material.h"
 
 class LightShader : public ShaderClass
@@ -16,25 +15,20 @@ private:
 public:
     LightShader() {}
     ~LightShader() {}
-    void bind() override
-    {
-        glUseProgram(programID);
-        attachCamera();
-    }
+    void bind() override { glUseProgram(programID); }
+    void setupUniforms() override { attachCamera(); }
     void compile() override { compileFromFile(vShaderPath, fShaderPath); }
-    void attachShape(ShapeClass *shape) override
+    void attachObject(Object *object) override
     {
         BENCHMARK_PROFILE();
-        auto model = shape->getModel();
+        auto model = object->getModel();
         setMat4(ShaderUniform::V_MODEL, model);
-        attachMaterial(&shape->getMaterial());
+        attachMaterial(&object->getMaterial());
     }
     std::unique_ptr<DirectionalLight> attachEmptyDirectionalLight()
     {
         std::unique_ptr<DirectionalLight> light(new DirectionalLight());
-        light->mAmbientIntensity = 0.0f;
-        light->mDiffuseIntensity = 0.0f;
-        light->mDiffuseDirection = glm::vec3(0);
+        light->setDirection(glm::vec3(0));
         attachDirectionalLight(light.get());
         return light;
     }
@@ -42,10 +36,10 @@ public:
     {
         BENCHMARK_PROFILE();
         bind();
-        set3f(ShaderUniform::FLIGHT_DIRLIGHT_COLOUR, light->mAmbientColour);
-        set1f(ShaderUniform::FLIGHT_DIRLIGHT_AMBIENT_INTENSITY, light->mAmbientIntensity);
-        set3f(ShaderUniform::FLIGHT_DIRLIGHT_DIRECTION, light->mDiffuseDirection);
-        set1f(ShaderUniform::FLIGHT_DIRLIGHT_DIFFUSE_INTENSITY, light->mDiffuseIntensity);
+        set3f(ShaderUniform::FLIGHT_DIRLIGHT_COLOUR, light->getColour());
+        set1f(ShaderUniform::FLIGHT_DIRLIGHT_AMBIENT_INTENSITY, light->getAmbientIntensity());
+        set3f(ShaderUniform::FLIGHT_DIRLIGHT_DIRECTION, light->getDirection());
+        set1f(ShaderUniform::FLIGHT_DIRLIGHT_DIFFUSE_INTENSITY, light->getDiffuseIntensity());
     }
     void attachPointLights(std::vector<PointLight *> lights)
     {
@@ -66,9 +60,36 @@ public:
             throw std::runtime_error("light index exceed max number of point light");
         set3f(ShaderUniform::FLIGHT_POINT_LIGHT_ATTENUATION(index), light->getAttenuation());
         set3f(ShaderUniform::FLIGHT_POINT_LIGHT_POSITION(index), light->getPosition());
-        set3f(ShaderUniform::FLIGHT_POINT_LIGHT_COLOUR(index), light->mAmbientColour);
-        set1f(ShaderUniform::FLIGHT_POINT_LIGHT_AMBIENT_INTENSITY(index), light->mAmbientIntensity);
-        set1f(ShaderUniform::FLIGHT_POINT_LIGHT_DIFFUSE_INTENSITY(index), light->mDiffuseIntensity);
+        set3f(ShaderUniform::FLIGHT_POINT_LIGHT_COLOUR(index), light->getColour());
+        set1f(ShaderUniform::FLIGHT_POINT_LIGHT_AMBIENT_INTENSITY(index), light->getAmbientIntensity());
+        set1f(ShaderUniform::FLIGHT_POINT_LIGHT_DIFFUSE_INTENSITY(index), light->getDiffuseIntensity());
+    }
+    void attachSpotLights(std::vector<SpotLight *> lights)
+    {
+        bind();
+        unsigned int size = lights.size();
+        if (size > ShaderUniform::FLIGHT_MAX_SPOT_LIGHT)
+            size = ShaderUniform::FLIGHT_MAX_SPOT_LIGHT;
+        for (int i = 0; i < size; i++)
+        {
+            attachSpotLight(lights[i], i);
+        }
+        set1i(ShaderUniform::FLIGHT_SPOT_LIGHT_COUNT, size);
+    }
+    void attachSpotLight(SpotLight *light, unsigned int index)
+    {
+        BENCHMARK_PROFILE();
+        if (index >= ShaderUniform::FLIGHT_MAX_SPOT_LIGHT)
+            throw std::runtime_error("light index exceed max number of spot light");
+
+        set3f(ShaderUniform::FLIGHT_SPOT_LIGHT_DIRECTION(index), light->getDirection());
+        set1f(ShaderUniform::FLIGHT_SPOT_LIGHT_CUTTOFF(index), light->getCuttoff());
+
+        set3f(ShaderUniform::FLIGHT_SPOT_LIGHT_ATTENUATION(index), light->getAttenuation());
+        set3f(ShaderUniform::FLIGHT_SPOT_LIGHT_POSITION(index), light->getPosition());
+        set3f(ShaderUniform::FLIGHT_SPOT_LIGHT_COLOUR(index), light->getColour());
+        set1f(ShaderUniform::FLIGHT_SPOT_LIGHT_AMBIENT_INTENSITY(index), light->getAmbientIntensity());
+        set1f(ShaderUniform::FLIGHT_SPOT_LIGHT_DIFFUSE_INTENSITY(index), light->getDiffuseIntensity());
     }
     void attachMaterial(Material *material)
     {

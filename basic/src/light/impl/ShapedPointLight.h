@@ -1,32 +1,30 @@
 #pragma once
 
 #include "PointLight.h"
-#include "shape/ShapeClass.h"
+#include "object/Object.h"
 #include "draw/shader/ShaderEnum.h"
 
 class ShapedPointLight : public PointLight
 {
 private:
-    std::unique_ptr<ShapeClass> mShape;
-    Enum::ShaderType mShaderType;
+    std::unique_ptr<Object> mObject;
 
 public:
-    ShapedPointLight(ShapeClass *shape, Enum::ShaderType type)
+    ShapedPointLight(Object *object)
     {
-        mShape = std::unique_ptr<ShapeClass>(shape);
-        mShaderType = type;
-        mShape->setPosition(pos);
+        mObject = std::unique_ptr<Object>(object);
+        mObject->setPosition(mPosition);
     }
     ~ShapedPointLight() {}
     void setPosition(glm::vec3 newPos) override
     {
-        pos = newPos;
-        mShape->setPosition(pos);
+        mPosition = newPos;
+        mObject->setPosition(mPosition);
     }
     void update() override
     {
-        mShape->setPosition(pos);
+        mObject->setPosition(mPosition);
     }
-    ShapeClass *getShape() { return mShape.get(); }
-    Enum::ShaderType getShaderType() { return mShaderType; }
+    Object *getObject() { return mObject.get(); }
+    Enum::ShaderType getShaderType() { return mObject->getShaderType(); }
 };
