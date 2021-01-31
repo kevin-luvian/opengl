@@ -133,10 +133,8 @@ void Screen::run(std::function<void()> onCreate, std::function<void()> onDraw)
             // glClearColor(color[0], color[1], color[2], 1.0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         }
-        {
-            // draw loop
-            onDraw();
-        }
+        // draw loop
+        onDraw();
         {
             BENCHMARK_PROFILE_NAME("SWAP_BUFFERS");
             // swap drawing screen

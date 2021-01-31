@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
-#include "shape/ShapeClass.h"
+#include "object/Object.h"
 
 class ShaderClass
 {
@@ -17,7 +17,8 @@ public:
     unsigned int getProgramID() const { return programID; };
 
     virtual void compile() = 0;
-    virtual void attachShape(ShapeClass *shape) = 0;
+    virtual void attachObject(Object *object) = 0;
+    virtual void setupUniforms() = 0;
 
     unsigned int getUniformLocation(std::string name)
     {
@@ -44,21 +45,37 @@ public:
     {
         glUniform1f(getUniformLocation(name), val);
     }
+    void set1i(std::string name, int val)
+    {
+        glUniform1i(getUniformLocation(name), val);
+    }
+
+    void set3fnl(std::string name, const glm::vec3 &vec)
+    {
+        glUniform3f(glGetUniformLocation(programID, name.c_str()), vec.x, vec.y, vec.z);
+    }
+    void set1fnl(std::string name, float val)
+    {
+        glUniform1f(glGetUniformLocation(programID, name.c_str()), val);
+    }
 
     // bind program state
-    void bind() const { glUseProgram(programID); }
+    virtual void bind() { glUseProgram(programID); }
 
     // unbind program state
-    void unbind() const { glUseProgram(0); }
+    virtual void unbind() { glUseProgram(0); }
 
     // clear opengl shader program
-    virtual void clear() const
+    virtual void clear()
     {
         if (programID != 0)
             glDeleteProgram(programID);
+        programID = 0;
     }
 
 protected:
+    unsigned int programID;
+
     // create shaders from file
     void compileFromFile(const char *vPath, const char *fPath)
     {
@@ -77,6 +94,7 @@ protected:
     // create shaders from chars
     void compileShader(const char *vCode, const char *fCode)
     {
+        BENCHMARK_PROFILE();
         programID = glCreateProgram();
         if (!programID)
         {
@@ -110,8 +128,6 @@ protected:
     }
 
 private:
-    unsigned int programID;
-
     // add shader to opengl state
     void addShader(const char *shaderCode, GLenum shaderType)
     {

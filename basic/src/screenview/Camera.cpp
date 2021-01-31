@@ -3,6 +3,7 @@
 Camera::Camera()
 {
     firstMoveFlag = true;
+    pos = glm::vec3(0.0f, 0.0f, 0.0f);
     initiate();
 }
 
@@ -73,7 +74,6 @@ void Camera::mouseMove(float x, float y)
 
 void Camera::updateValues()
 {
-    // glm::mat4 view = glm::lookAt(curViewTarget - viewTarget, pos, glm::vec3(0.0f, 0.0f, 1.0f));
     camFront.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
     camFront.y = sin(glm::radians(pitch));
     camFront.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -86,7 +86,7 @@ void Camera::updateValues()
 
 void Camera::updateViewProjection()
 {
-    auto view = glm::lookAt(pos, pos + camFront, camUp);
+    view = glm::lookAt(pos, pos + camFront, camUp);
     viewProjection = projection * view;
 }
 

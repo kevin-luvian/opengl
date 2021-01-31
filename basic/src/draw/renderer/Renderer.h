@@ -1,6 +1,6 @@
 #pragma once
 
-#include "draw/mesh/Mesh.h"
+#include "mesh/Mesh.h"
 #include "screenview/ScreenState.h"
 
 class Renderer
@@ -20,8 +20,10 @@ public:
 
     virtual void bindLayouts() = 0;
     virtual void unbindLayouts() = 0;
+    virtual void create(Mesh &mesh) = 0;
     virtual void draw()
     {
+        BENCHMARK_PROFILE();
         bind();
         bool *keys = ScreenState::KeyState();
         glPointSize(1.0f);
@@ -39,6 +41,7 @@ public:
 protected:
     void create(Mesh &mesh, std::function<void()> createOther)
     {
+        BENCHMARK_PROFILE();
         IndicesSize = mesh.indices.size * Indice::count();
 
         // generate vertex array
@@ -59,6 +62,10 @@ protected:
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, pos));
         glEnableVertexAttribArray(0);
 
+        // define colour attributes
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, colour));
+        glEnableVertexAttribArray(1);
+
         // create other attributes
         createOther();
 
@@ -74,11 +81,13 @@ private:
         glBindVertexArray(VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
         glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
         bindLayouts();
     }
     void unbind()
     {
         unbindLayouts();
+        glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
