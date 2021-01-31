@@ -50,7 +50,7 @@ public:
         static Benchmark *instance = new Benchmark();
         return *instance;
     }
-    void begin(const std::string &_category, const std::string &_filepath = "../res/result.json")
+    void begin(const std::string &_category, const std::string &_filepath = "../res/benchmark.json")
     {
         category = _category;
         filepath = _filepath;
