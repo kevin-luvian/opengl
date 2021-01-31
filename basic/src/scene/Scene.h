@@ -68,27 +68,29 @@ public:
         // can be optimized
         if (pointLights.size() > 0)
         {
+            for (int i = 0; i < pointLights.size(); i++)
+            {
+                pointLights[i]->update();
+            }
             sortNearestPointLight();
             mSManager.getLightShader()->attachPointLights(pointLights);
         }
         if (spotLights.size() > 0)
         {
+            for (int i = 0; i < spotLights.size(); i++)
+            {
+                spotLights[i]->update();
+            }
             sortNearestSpotLight();
             mSManager.getLightShader()->attachSpotLights(spotLights);
         }
     }
 
-    void addObject(Object *rObject)
-    {
-        // rObject->attachRenderer(RendererManager::CreateRendererFromShaderType(rObject->getShaderType()));
-        rObjects.push_back(rObject);
-    }
+    void addObject(Object *rObject) { rObjects.push_back(rObject); }
     void addGlobalLight(DirectionalLight *light) { globalLight = std::unique_ptr<DirectionalLight>(light); }
     void addPointLight(PointLight *light) { pointLights.push_back(light); }
-    void addShapedPointLight(ShapedPointLight *light)
+    void addObjectPointLight(ObjectPointLight *light)
     {
-        // auto renderer = RendererManager::CreateRendererFromShaderType(light->getShaderType());
-        // light->getObject()->attachRenderer(renderer);
         addObject(light->getObject());
         addPointLight(light);
     }
@@ -104,7 +106,6 @@ public:
     }
     void sortShapeShaders()
     {
-        BENCHMARK_PROFILE();
         std::sort(rObjects.begin(), rObjects.end(), Renderable::ShaderTypeComparer);
     }
     static void printObjectVector(std::vector<Object *> objects)

@@ -1,6 +1,5 @@
 #include "screenview/Screen.h"
-#include "scene/MainScene.h"
-#include "light/impl/PointLight.h"
+#include "scene/Scenes.h"
 
 MainScene scene;
 

@@ -10,6 +10,7 @@ protected:
     glm::mat4 mModel;
     glm::vec4 mColour;
     glm::vec3 mPosition;
+    glm::vec3 mRotations;
     float mSize;
     bool shouldUpdate;
 
@@ -36,6 +37,21 @@ public:
     glm::vec3 getPosition() { return mPosition; }
     glm::vec4 getColour() { return mColour; }
     float getSize() { return mSize; }
+    void rotateX(float angle)
+    {
+        shouldUpdate = true;
+        mRotations.x = util::toRadians(angle);
+    }
+    void rotateY(float angle)
+    {
+        shouldUpdate = true;
+        mRotations.y = util::toRadians(angle);
+    }
+    void rotateZ(float angle)
+    {
+        shouldUpdate = true;
+        mRotations.z = util::toRadians(angle);
+    }
     void setPosition(glm::vec3 position)
     {
         shouldUpdate = true;
@@ -54,6 +70,9 @@ public:
             shouldUpdate = false;
             mModel = glm::mat4(1.0f);
             mModel = glm::translate(mModel, mPosition);
+            mModel = glm::rotate(mModel, mRotations.x, glm::vec3(0, 1, 0));
+            mModel = glm::rotate(mModel, mRotations.y, glm::vec3(-1, 0, 0));
+            mModel = glm::rotate(mModel, mRotations.z, glm::vec3(0, 0, 1));
             mModel = glm::scale(mModel, glm::vec3(mSize, mSize, mSize));
         }
     }

@@ -19,7 +19,6 @@ public:
         mAttenuation = LightFactor::Attenuation::Dist_65;
     }
     ~SpotLight() {}
-    void update() override {}
     void updateToFlash()
     {
         mPosition = Camera::Position();

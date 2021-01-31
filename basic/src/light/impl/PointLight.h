@@ -10,6 +10,13 @@ class PointLight : public Light
 protected:
     glm::vec3 mPosition;
     glm::vec3 mAttenuation;
+    float distToCamera;
+
+    void calcManhattanDistanceToCamera()
+    {
+        auto dist = glm::abs(mPosition - Camera::Position());
+        distToCamera = util::min(dist.x, dist.y, dist.z);
+    }
 
 public:
     PointLight()
@@ -21,7 +28,7 @@ public:
     }
     virtual ~PointLight() {}
 
-    virtual void update() {}
+    virtual void update() { calcManhattanDistanceToCamera(); }
 
     glm::vec3 getAttenuation() { return mAttenuation; }
     void setAttenuation(float constant, float linear, float quadratic)
@@ -34,11 +41,7 @@ public:
             attenuation_.x = 1.0f;
         mAttenuation = attenuation_;
     }
-    float getManhattanDistanceToCamera() const
-    {
-        auto dist = glm::abs(mPosition - Camera::Position());
-        return util::min(dist.x, dist.y, dist.z);
-    }
+    float getDistanceToCamera() const { return distToCamera; }
     void addVelocity(glm::vec3 vel) { mPosition += vel; }
     glm::vec3 getPosition() { return mPosition; }
     virtual void setPosition(glm::vec3 newPos) { mPosition = newPos; }
@@ -48,6 +51,6 @@ public:
     }
     static bool DistanceComparer(PointLight const *a, PointLight const *b)
     {
-        return a->getManhattanDistanceToCamera() < b->getManhattanDistanceToCamera();
+        return a->getDistanceToCamera() < b->getDistanceToCamera();
     }
 };

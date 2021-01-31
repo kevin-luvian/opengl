@@ -117,8 +117,7 @@ vec4 calcSpotLights()
 		float theta = dot(lightDirection, sLights[i].direction);
 		if(theta > sLights[i].cutoff) 
 		{
-			float lerp = 1.0f - (1.0f - theta) * (1.0f / (1.0f - sLights[i].cutoff));
-			// lerp = map(theta, 0, 1.0f, 0, sLights[i].cutoff);
+			float lerp = map(theta, sLights[i].cutoff, 1.0f, 0, 1.0f);
 			totalColour += calcPointLight(sLights[i].pointLight) * lerp;
 		}
 	}

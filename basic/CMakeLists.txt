@@ -23,6 +23,7 @@ set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
+find_package(assimp REQUIRED)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
                         ${PROJECT_DIRECTORY}
@@ -33,7 +34,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_link_libraries(${PROJECT_NAME}
                     ${OPENGL_LIBRARIES}
                     ${GLEW_LIBRARIES}
-                    glfw)
+                    glfw
+                    assimp)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
