@@ -24,9 +24,9 @@ public:
         BENCHMARK_PROFILE();
         auto globalLight = new DirectionalLight();
         globalLight->setDirection(glm::vec3(0, -1.0, -1.0));
-        // globalLight->setDiffuseIntensity(0.1f);
-        // globalLight->setAmbientIntensity(0.02f);
-        // addGlobalLight(globalLight);
+        globalLight->setDiffuseIntensity(0.1f);
+        globalLight->setAmbientIntensity(0.02f);
+        addGlobalLight(globalLight);
 
         auto sheet = new ShadedSheet(70, 70);
         sheet->setPosition(glm::vec3(0, -3.0f, 0));

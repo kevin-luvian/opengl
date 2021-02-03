@@ -1,5 +1,6 @@
 #include "screenview/Screen.h"
 #include "scene/Scenes.h"
+#include "assimp/Importer.hpp"
 
 MainScene scene;
 
