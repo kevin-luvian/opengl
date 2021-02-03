@@ -11,13 +11,14 @@ public:
 
     Mesh() {}
     virtual ~Mesh() {}
-    virtual void createMesh() = 0;
+    virtual void createMesh(){};
 
     void release()
     {
         indices.release();
         vertices.release();
     }
+
     void createVerticesColourFromPos()
     {
         for (int i = 0; i < vertices.size; i++)
@@ -41,8 +42,7 @@ public:
     }
     void calculateAverageNormals()
     {
-        glm::vec3 vLeft, vRight, vTop, vSub1, vSub2;
-        glm::vec3 vNormal;
+        glm::vec3 vLeft, vRight, vTop, vSub1, vSub2, vNormal;
         // calculate agregate cross product
         for (int i = 0; i < indices.size; i++)
         {

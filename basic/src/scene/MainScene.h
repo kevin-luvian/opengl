@@ -6,6 +6,9 @@
 #include "draw/shader/Shaders.h"
 #include "light/Lights.h"
 
+#include "model/Model.h"
+#include "draw/renderer/impl/ModelRenderer.h"
+
 class MainScene : public Scene
 {
 private:

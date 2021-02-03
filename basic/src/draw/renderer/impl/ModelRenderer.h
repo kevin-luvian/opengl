@@ -2,24 +2,24 @@
 
 #include "draw/renderer/Renderer.h"
 
-class LightRenderer : public Renderer
+class ModelRenderer : public Renderer
 {
 private:
     typedef Renderer inherited;
 
 public:
-    LightRenderer() {}
-    ~LightRenderer() {}
+    ModelRenderer() {}
+    ~ModelRenderer() {}
 
-    void bindLayouts() override
+    virtual void bindLayouts()
     {
         glEnableVertexAttribArray(2);
     };
-    void unbindLayouts() override
+    virtual void unbindLayouts()
     {
         glDisableVertexAttribArray(2);
     };
-    void create(Mesh &mesh) override
+    virtual void create(Mesh &mesh)
     {
         BENCHMARK_PROFILE();
         inherited::create(mesh, []() {

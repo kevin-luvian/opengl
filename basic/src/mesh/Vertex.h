@@ -5,6 +5,7 @@ struct Vertex
     glm::vec3 pos;
     glm::vec4 colour = glm::vec4(1.0, 0.0, 0.0, 1.0);
     glm::vec3 normal;
+    glm::vec2 texCoord = glm::vec2(0);
 
     void createColourFromPos() { colour = glm::vec4(clampPos(0.0, 1.0), 1.0) + glm::vec4(0.0, 0.4, 0.7, 0.2); }
     static unsigned long posCount() { return 3; }
@@ -12,7 +13,8 @@ struct Vertex
     {
         out << "pos(x:" << v.pos.x << ", y:" << v.pos.y << ", z:" << v.pos.z << "), "
             << "colour(r:" << v.colour.x << ", g:" << v.colour.y << ", b:" << v.colour.z << ", a:" << v.colour.w << "), "
-            << "normal(x:" << v.normal.x << ", y:" << v.normal.y << ", z:" << v.normal.z << ")";
+            << "normal(x:" << v.normal.x << ", y:" << v.normal.y << ", z:" << v.normal.z << "), "
+            << "texCoord(x:" << v.texCoord.x << ", y:" << v.texCoord.y << ")";
         return out;
     }
     glm::vec3 clampPos(float min, float max) const
@@ -23,9 +25,8 @@ struct Vertex
     {
         if (a < min)
             return min;
-        else if (a > max)
+        if (a > max)
             return max;
-        else
-            return a;
+        return a;
     }
 };
