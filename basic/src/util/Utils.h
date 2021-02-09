@@ -30,6 +30,11 @@ namespace util
         return y;
     }
 
+    static float clamp(float val, float min, float max)
+    {
+        return std::max(std::min(val, min), max);
+    }
+
     static float min(float a, float b)
     {
         if (a < b)

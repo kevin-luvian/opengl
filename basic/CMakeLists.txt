@@ -9,9 +9,8 @@ set(LIB_DIRECTORY lib/)
 
 set(SOURCE_FILES
     src/main.cpp
-    src/screenview/Camera.cpp
-    src/screenview/Screen.cpp
-    src/mesh/impl/Sphere.cpp)
+    src/glComponent/Camera.cpp
+    src/glComponent/Screen.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

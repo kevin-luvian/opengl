@@ -1,24 +1,26 @@
-#include "screenview/Screen.h"
-#include "scene/Scenes.h"
+#define STB_IMAGE_IMPLEMENTATION
 
-MainScene scene;
+#include "glComponent/Screen.h"
+#include "scene/HScene.h"
+
+Scene01 scene01;
 
 void onCreate()
 {
     BENCHMARK_PROFILE();
-    scene.prepare();
+    scene01.prepare();
 }
 
 void onDraw()
 {
     BENCHMARK_PROFILE();
-    scene.play();
+    scene01.play();
 }
 
 int main(int, char **)
 {
     Benchmark::Get().begin("opengl");
-    Screen screen;
+    Screen screen(800, 500);
     screen.run(onCreate, onDraw);
     Benchmark::Get().end();
 }

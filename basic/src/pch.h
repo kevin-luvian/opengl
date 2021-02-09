@@ -8,9 +8,12 @@
 #include <cmath>
 #include <iostream>
 #include <string>
+#include <functional>
 #include <memory>
 #include <vector>
 #include <stdint.h>
 #include "util/Benchmark.h"
 #include "util/Utils.h"
-#include "util/DetailedArray.h"
+#include "util/Array.h"
+#include "unit/Vectors.h"
+#include "unit/Color.h"
