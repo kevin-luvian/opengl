@@ -1,3 +1,5 @@
+#define STB_IMAGE_IMPLEMENTATION
+
 #include "screenview/Screen.h"
 #include "scene/Scenes.h"
 #include "assimp/Importer.hpp"

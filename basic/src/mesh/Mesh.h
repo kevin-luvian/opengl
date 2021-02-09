@@ -2,12 +2,15 @@
 
 #include "Indice.h"
 #include "Vertex.h"
+#include "Texture.h"
 
 class Mesh
 {
 public:
     DetailedArray<Vertex> vertices;
     DetailedArray<Indice> indices;
+    DetailedArray<Texture> textures;
+    Texture stex;
 
     Mesh() {}
     virtual ~Mesh() {}

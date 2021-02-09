@@ -3,6 +3,7 @@
 in vec4 vColour;
 in vec3 vNormal;
 in vec3 fPosition;
+in vec2 vTexCoord;
 
 out vec4 colour;
 
@@ -52,6 +53,8 @@ uniform DirectionalLight dirLight;
 uniform Material material;
 
 uniform vec3 cameraPosition;
+
+uniform sampler2D texData;
 
 vec4 calcDirectionLight(Light light, vec3 direction)
 {
@@ -129,5 +132,7 @@ void main()
 	vec4 lightsColour = calcDirectionLight(dirLight.base, dirLight.direction);
 	lightsColour += calcPointLights();
 	lightsColour += calcSpotLights();
-	colour = vColour * lightsColour;
+
+	colour = vColour * texture(texData, vTexCoord);
+	colour = colour * lightsColour;
 }

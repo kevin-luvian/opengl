@@ -17,7 +17,6 @@ private:
 public:
     DynamicSphere *dSphere;
     ObjectPointLight *spl;
-    SpotLight *spotl;
 
     MainScene() {}
     ~MainScene() {}
@@ -27,8 +26,8 @@ public:
         BENCHMARK_PROFILE();
         auto globalLight = new DirectionalLight();
         globalLight->setDirection(glm::vec3(0, -1.0, -1.0));
-        globalLight->setDiffuseIntensity(0.1f);
-        globalLight->setAmbientIntensity(0.02f);
+        globalLight->setDiffuseIntensity(0.0f);
+        globalLight->setAmbientIntensity(1.0f);
         addGlobalLight(globalLight);
 
         auto sheet = new ShadedSheet(70, 70);
@@ -36,24 +35,12 @@ public:
         sheet->setSize(50.0f);
         addObject(sheet);
 
-        auto splShape = new DynamicSphere(45);
-        splShape->changeShaderType(Enum::ShaderType::Simple);
-        splShape->setSize(0.2f);
-        splShape->setColour(glm::vec4(1.0));
-        spl = new ObjectPointLight(splShape);
-        spl->setAttenuation(LightFactor::Attenuation::Dist_20);
-        spl->setPosition(glm::vec3(30, 5.0, 20));
-        addObjectPointLight(spl);
-
-        spotl = new SpotLight();
-        spotl->setDiffuseIntensity(5.0f);
-        spotl->setAttenuation(LightFactor::Attenuation::Dist_65);
-        addSpotLight(spotl);
-
         dSphere = new DynamicSphere(50);
         dSphere->setColour(Color::ORANGE);
         dSphere->setPosition(glm::vec3(-10, -1.0, 10));
         dSphere->changeShaderType(Enum::ShaderType::Light);
+        dSphere->getMaterial().mShine = 0.0f;
+        dSphere->getMaterial().mSpecularIntensity = 0.0f;
         addObject(dSphere);
 
         auto sp = new ShadedPyramid();
@@ -70,8 +57,6 @@ public:
     void onPlay() override
     {
         BENCHMARK_PROFILE();
-        spotl->updateToFlash();
-
         dSphere->rotateX(sAngle);
         if (sAngle > 360.0f)
             sAngle = 0.0f;

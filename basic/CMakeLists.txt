@@ -12,7 +12,8 @@ set(SOURCE_FILES
     src/screenview/Camera.cpp
     src/screenview/Screen.cpp
     src/mesh/impl/Sphere.cpp
-    src/model/Model.cpp)
+    src/model/Model.cpp
+    src/mesh/Texture.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
@@ -24,7 +25,7 @@ set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
-find_package(assimp REQUIRED)
+# find_package(assimp REQUIRED)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
                         ${PROJECT_DIRECTORY}

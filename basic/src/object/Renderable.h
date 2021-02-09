@@ -11,22 +11,23 @@ public:
     Renderable() {}
     virtual ~Renderable() {}
 
-    virtual Material &getMaterial() { return *material.get(); }
+    virtual Material &getMaterial()
+    {
+        if (!material)
+            setMaterial();
+        return *material.get();
+    }
     virtual Renderer &getRenderer() { return *renderer.get(); }
     virtual Enum::ShaderType getShaderType() const { return shaderType; }
-    virtual void attachMaterial(Material *material_) { material = std::unique_ptr<Material>(material_); }
-    virtual void attachRenderer(Renderer *renderer_) { renderer = std::unique_ptr<Renderer>(renderer_); }
     virtual void setShaderType(Enum::ShaderType type) { shaderType = type; }
 
     virtual void create()
     {
+        if (!material)
+            setMaterial();
         setMesh();
-        setMaterial();
         setShaderType();
         setRenderer();
-        // should throw error
-        if (renderer.get() == nullptr)
-            std::cout << "no attached renderer";
         renderer->create(*mesh.get());
     };
     virtual void render() { renderer->draw(); }

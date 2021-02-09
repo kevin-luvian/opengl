@@ -8,6 +8,7 @@ void Model::loadModel(std::string path)
     {
         throw std::runtime_error("Model from " + path + " failed to load, " + importer.GetErrorString());
     }
+    directory = path.substr(0, path.find_last_of('/'));
     mMeshes.make_empty(scene->mNumMeshes);
     processNode(scene->mRootNode, scene);
 }
@@ -60,8 +61,53 @@ Mesh *Model::processMesh(aiMesh *mesh, const aiScene *scene)
         }
     }
 
+    // std::vector<Texture> textures;
+    // unsigned int randNum = RGEN::Uint(0, 100);
+    // std::cout << "tex size [" << randNum << "]: " << scene->mNumMaterials << "\n";
+    // if (mesh->mMaterialIndex >= 0)
+    // {
+    //     aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+    //     std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+    //     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+    //     std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+    //     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+    // }
+    // mMesh->textures.make_from(textures);
+    // std::cout << "tex size [" << randNum << "]: " << mMesh->textures.size << "\n";
+
+    if (mesh->mMaterialIndex >= 0)
+    {
+        aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+        aiString path;
+        material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+        std::stringstream filepath;
+        filepath << directory << "/" << path.C_Str();
+
+        Texture texture;
+        texture.loadFromFile(filepath.str());
+        texture.path = path.C_Str();
+
+        mMesh->stex = texture;
+    }
+
     return mMesh;
 }
-// vector<Texture> loadMaterialTextures(aiMaterial *mat,
-//                                      aiTextureType type,
-//                                      std::string typeName);
+std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)
+{
+    unsigned int size = mat->GetTextureCount(type);
+    std::vector<Texture> textures(size);
+    for (unsigned int i = 0; i < size; i++)
+    {
+        aiString str;
+        mat->GetTexture(type, i, &str);
+        std::stringstream filepath;
+        filepath << directory << "/" << str.C_Str();
+
+        Texture texture;
+        texture.loadFromFile(filepath.str());
+        texture.type = typeName;
+        texture.path = str.C_Str();
+        textures.push_back(texture);
+    }
+    return textures;
+}
