@@ -5,6 +5,7 @@ namespace unit
     struct vec2
     {
         float x, y;
+        vec2() : x(0.0f), y(0.0f) {}
         vec2(float val) : x(val), y(val) {}
         vec2(float x_, float y_) : x(x_), y(y_) {}
         friend std::ostream &operator<<(std::ostream &out, const vec2 &v)
@@ -16,44 +17,35 @@ namespace unit
     struct vec3
     {
         float x, y, z;
-        vec3() { x = y = z = 0.0f; }
+        vec3 copy() const { return {x, y, z}; }
+        vec3() : x(0.0f), y(0.0f), z(0.0f) {}
         vec3(float val) { x = y = z = val; }
         vec3(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
-        vec3 &scale(const float &val)
+        glm::vec3 toGLMVec3() { return glm::vec3(x, y, z); }
+        float iLength() { return util::fisqrt(x * x + y * y + z * z); }
+        void normalize() { scale(iLength()); }
+        void scale(const float &val)
         {
             x *= val;
             y *= val;
             z *= val;
-            return *this;
         }
-        glm::vec3 toGLMVec3() { return glm::vec3(x, y, z); }
-        float iLength() { return util::fisqrt(x * x + y * y + z * z); }
-        void normalize() { scale(iLength()); }
-        vec3 &add(const vec3 &other)
+        vec3 operator-() const { return {-x, -y, -z}; }
+        vec3 operator-(const vec3 &other) const
+        {
+            return {x - other.x, y - other.y, z - other.z};
+        }
+        void operator-=(const vec3 &other) { *this += -other; }
+        vec3 operator+(const vec3 &other) const
+        {
+            return {x + other.x, y + other.y, z + other.z};
+        }
+        void operator+=(const vec3 &other)
         {
             x += other.x;
             y += other.y;
             z += other.z;
-            return *this;
         }
-        vec3 &sub(const vec3 &other)
-        {
-            x -= other.x;
-            y -= other.y;
-            z -= other.z;
-            return *this;
-        }
-        vec3 operator-(const vec3 &other) const
-        {
-            vec3 res = *this;
-            return res.sub(other);
-        }
-        vec3 operator+(const vec3 &other) const
-        {
-            vec3 res = *this;
-            return res.add(other);
-        }
-        vec3 &operator+=(const vec3 &other) { return add(other); }
         friend std::ostream &operator<<(std::ostream &out, const vec3 &v)
         {
             out << "x:" << v.x << ", y:" << v.y << ", z:" << v.z;
@@ -63,12 +55,12 @@ namespace unit
     struct vec4
     {
         float x, y, z, w;
+        vec4(float val) : x(val), y(val), z(val), w(val) {}
         vec4(float x_, float y_, float z_, float w_) : x(x_), y(y_), z(z_), w(w_) {}
-        vec4(float val) { x = y = z = w = val; }
     };
-    static vec3 normalize(const vec3 &vector)
+    static vec3 normalize(const vec3 &v)
     {
-        vec3 res = vector;
+        vec3 res = v;
         res.normalize();
         return res;
     }

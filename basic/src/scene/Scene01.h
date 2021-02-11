@@ -18,5 +18,11 @@ public:
         addObject(p);
         addObject(pt);
     }
-    void onPlay() override {}
+    float rotation = 0.0f;
+    void onPlay() override
+    {
+        rotation += 0.5f;
+        pt->rotateX(rotation);
+        p->rotateX(-rotation);
+    }
 };

@@ -37,6 +37,11 @@ public:
         bindShader(shader);
         renderable::render();
     }
+    void rotateX(float rotation)
+    {
+        float angle = util::toRadians(rotation);
+        model = glm::rotate(model, angle, glm::vec3(0, 1, 0));
+    }
 
 protected:
     ShaderType shaderType;
@@ -47,7 +52,7 @@ protected:
     virtual ShaderType mShaderType() = 0;
     virtual void onCreate() = 0;
     virtual void onUpdate() = 0;
-    virtual void bindShader(Shader *shader) const { shader->setMat4(GLSLI::VMODEL, model); };
+    virtual void bindShader(Shader *shader) const = 0;
 
 public:
     static bool ShaderTypeComparer(const Object *a, const Object *b)

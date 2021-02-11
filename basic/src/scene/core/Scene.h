@@ -19,13 +19,16 @@ public:
     }
     void play()
     {
-        onPlay();
         sManager.reset();
         Shader *shader;
         for (Object *obj : objects)
         {
-            shader = sManager.bind(obj->getShaderType());
             obj->update();
+        }
+        onPlay();
+        for (Object *obj : objects)
+        {
+            shader = sManager.bind(obj->getShaderType());
             obj->render(shader);
         }
     }

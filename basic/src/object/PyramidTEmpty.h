@@ -3,11 +3,11 @@
 #include "core/TexturedObject.h"
 #include "mesh/factory/Pyramid.h"
 
-class PyramidT : public TexturedObject
+class PyramidTEmpty : public TexturedObject
 {
 public:
-    PyramidT() {}
-    ~PyramidT() {}
+    PyramidTEmpty() {}
+    ~PyramidTEmpty() {}
     void onCreate() override
     {
         std::cout << "creating PT\n";
@@ -16,7 +16,7 @@ public:
         auto color = Colors::OCEAN;
         color.a = 0.0f;
         addColor(color);
-        texture = TextureFactory::Mirrored("../res/texture/GoldMetal.jpg");
+        // texture = TextureFactory::Mirrored("../res/texture/GoldMetal.jpg");
 
         // printVertices();
 

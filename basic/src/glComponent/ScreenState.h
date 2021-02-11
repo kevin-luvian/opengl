@@ -5,7 +5,7 @@ class ScreenState
 private:
     int glfwMultisample = 8;
     bool showCursor = true;
-    bool faceCulling = false;
+    bool faceCulling = true;
     bool keyState[1024];
     unsigned int mWidth, mHeight;
 

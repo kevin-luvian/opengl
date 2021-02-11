@@ -9,6 +9,7 @@ protected:
     virtual ~SimpleObject() {}
 
     ShaderType mShaderType() override { return ShaderType::Simple; };
+    void bindShader(Shader *shader) const override { shader->setMat4(GLSLI::VMODEL, model); }
     void bindAttrib() const override
     {
         glEnableVertexAttribArray(0);

@@ -7,7 +7,6 @@ struct Texture
     unsigned int id;
     std::string type;
 
-    ~Texture() { clear(); }
     void bindDefault() const
     {
         bind(0);
@@ -19,9 +18,17 @@ struct Texture
     }
     void clear()
     {
-        glDeleteTextures(1, &id);
         id = 0;
         type.clear();
+    }
+    void deleteTexture()
+    {
+        if (id != 0)
+        {
+            glDeleteTextures(1, &id);
+            std::cout << "GLTexture id:" << id << " [deleted]\n";
+        }
+        clear();
     }
     friend std::ostream &operator<<(std::ostream &out, const Texture &o)
     {
@@ -37,11 +44,12 @@ namespace TextureFactory
         Texture texture;
         int width, height, bitDepth;
         auto *texData = stbi_load(path.c_str(), &width, &height, &bitDepth, 0);
-        std::cout << "load file: " << path << std::endl;
+        // std::cout << "load file: " << path
+        //           << "\n width: " << width
+        //           << "\n height: " << height
+        //           << std::endl;
         if (!texData)
             std::cout << "failed to load file: " << path << std::endl;
-
-        std::cout << texData << "\n";
 
         glGenTextures(1, &texture.id);
         glBindTexture(GL_TEXTURE_2D, texture.id);
@@ -55,7 +63,6 @@ namespace TextureFactory
 
         glBindTexture(GL_TEXTURE_2D, 0);
         stbi_image_free(texData);
-        std::cout << "texId:: " << texture.id << "\n";
         return texture;
     }
 }; // namespace TextureFactory

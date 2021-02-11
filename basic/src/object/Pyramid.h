@@ -9,7 +9,7 @@ class Pyramid : public SimpleObject
 public:
     Pyramid()
     {
-        useMesh(MeshFactory::Pyramid());
+        transferMesh(MeshFactory::Pyramid());
         createVerticesColorFromPos();
         auto color = Colors::OCEAN;
         color.a = 0.0f;

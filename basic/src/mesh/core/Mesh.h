@@ -18,12 +18,13 @@ public:
         indices = obj.indices;
         texture = obj.texture;
     }
-    virtual ~Mesh() {}
-    void useMesh(Mesh obj)
+    virtual ~Mesh() { texture.deleteTexture(); }
+    void transferMesh(Mesh obj)
     {
         vertices.transfer(obj.vertices);
         indices.transfer(obj.indices);
         texture = std::move(obj.texture);
+        obj.texture.clear();
     }
     void addColor(unit::color col)
     {
