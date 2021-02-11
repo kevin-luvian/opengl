@@ -2,7 +2,7 @@
 
 namespace GLSLI
 {
-    static const std::string VMVP = "mvp";
+    static const std::string VVIEW_PROJECTION = "viewProjection";
 
     static const std::string VMODEL = "model";
     static const std::string VVIEW = "view";

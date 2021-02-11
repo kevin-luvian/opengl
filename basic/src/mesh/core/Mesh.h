@@ -11,10 +11,7 @@ public:
     Array<Indice> indices;
     Texture texture;
 
-    Mesh()
-    {
-        std::cout << "creating mesh\n";
-    }
+    Mesh() {}
     Mesh(const Mesh &obj)
     {
         vertices = obj.vertices;
@@ -22,20 +19,27 @@ public:
         texture = obj.texture;
     }
     virtual ~Mesh() {}
-    void transfer(Mesh obj)
+    void useMesh(Mesh obj)
     {
         vertices.transfer(obj.vertices);
         indices.transfer(obj.indices);
         texture = std::move(obj.texture);
     }
-    void createVerticesColourFromPos()
+    void addColor(unit::color col)
     {
         for (int i = 0; i < vertices.size; i++)
         {
-            vertices[i].createColourFromPos();
+            vertices[i].color = unit::clamp(vertices[i].color + col);
         }
     }
-    void createUniformColours(unit::color color)
+    void createVerticesColorFromPos()
+    {
+        for (int i = 0; i < vertices.size; i++)
+        {
+            vertices[i].createColorFromPos();
+        }
+    }
+    void createUniformColors(unit::color color)
     {
         for (int i = 0; i < vertices.size; i++)
         {
@@ -74,5 +78,14 @@ public:
         {
             vertices[i].normal.normalize();
         }
+    }
+    void printVertices()
+    {
+        std::cout << "Mesh[";
+        for (int i = 0; i < vertices.size; i++)
+        {
+            std::cout << vertices[i] << "\n";
+        }
+        std::cout << "]\n";
     }
 };

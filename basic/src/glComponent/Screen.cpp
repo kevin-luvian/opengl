@@ -84,6 +84,9 @@ bool Screen::setupGLFW()
     // removing vsync
     glfwSwapInterval(0);
 
+    // multisampling
+    glfwWindowHint(GLFW_SAMPLES, ScreenState::MultiSampleCount());
+
     return true;
 }
 bool Screen::setupGLEW()
@@ -128,9 +131,6 @@ bool Screen::setupWindow()
 
     // enable MSAA
     glEnable(GL_MULTISAMPLE);
-
-    // multisampling
-    glfwWindowHint(GLFW_SAMPLES, 4);
 
     // opengl viewport
     glViewport(0, 0, bufferWidth, bufferHeight);

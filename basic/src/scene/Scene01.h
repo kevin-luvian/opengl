@@ -1,22 +1,22 @@
 #pragma once
 
 #include "core/Scene.h"
-#include "object/Pyramid.h"
+#include "object/HObject.h"
 #include "mesh/HMesh.h"
 
 class Scene01 : public Scene
 {
 public:
-    Scene01()
-    {
-        std::cout << "creating scene01\n";
-    }
-    ~Scene01() {}
+    Pyramid *p = new Pyramid();
+    PyramidT *pt = new PyramidT();
 
-    void prepare() override
+    Scene01() { std::cout << "creating scene01\n"; }
+    ~Scene01() { delete p; }
+
+    void onPrepare() override
     {
-        Pyramid p;
-        p.print();
+        addObject(p);
+        addObject(pt);
     }
-    void play() override {}
+    void onPlay() override {}
 };

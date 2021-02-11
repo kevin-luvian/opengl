@@ -3,6 +3,7 @@
 class ScreenState
 {
 private:
+    int glfwMultisample = 8;
     bool showCursor = true;
     bool faceCulling = false;
     bool keyState[1024];
@@ -17,6 +18,7 @@ private:
     }
 
 public:
+    static int MultiSampleCount() { return GET().glfwMultisample; }
     static bool IsCursorEnabled() { return GET().showCursor; }
     static bool IsCulled() { return GET().faceCulling; }
     static bool *KeyState() { return GET().keyState; }

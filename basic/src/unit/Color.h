@@ -9,6 +9,26 @@ namespace unit
         color(float r_, float g_, float b_, float a_) : r(r_), g(g_), b(b_), a(a_) {}
         glm::vec4 toGLMVec4() const { return glm::vec4(r, g, b, a); }
         unit::vec4 toVec4() const { return unit::vec4(r, g, b, a); }
+        color &add(const color &other)
+        {
+            r += other.r;
+            g += other.g;
+            b += other.b;
+            a += other.a;
+            return *this;
+        }
+
+        color operator+(const color &other) const
+        {
+            color res = *this;
+            return res.add(other);
+        }
+        void operator+=(const color &other) { add(other); }
+        friend std::ostream &operator<<(std::ostream &out, const color &col)
+        {
+            out << "r:" << col.r << ", g:" << col.g << ", b:" << col.b << ", a:" << col.a;
+            return out;
+        }
     };
     static color clamp(const color &col)
     {
@@ -25,4 +45,5 @@ namespace Colors
 {
     static const unit::color BLACK = {0.0f, 0.0f, 0.0f, 1.0f};
     static const unit::color WHITE = {1.0f, 1.0f, 1.0f, 1.0f};
+    static const unit::color OCEAN = {0.0f, 0.4f, 0.7f, 1.0f};
 } // namespace Colors

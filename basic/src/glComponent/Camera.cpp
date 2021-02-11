@@ -10,29 +10,17 @@ void Camera::keyUpdate()
     float velocity = deltaTime * moveSpeed;
 
     if (keys[GLFW_KEY_W])
-    {
         pos += camFront * velocity;
-    }
     if (keys[GLFW_KEY_S])
-    {
         pos -= camFront * velocity;
-    }
     if (keys[GLFW_KEY_A])
-    {
         pos -= camRight * velocity;
-    }
     if (keys[GLFW_KEY_D])
-    {
         pos += camRight * velocity;
-    }
     if (keys[GLFW_KEY_SPACE])
-    {
         pos += worldUp * velocity;
-    }
     if (keys[GLFW_KEY_LEFT_SHIFT])
-    {
         pos -= worldUp * velocity;
-    }
     updateViewProjection();
 }
 
@@ -50,10 +38,10 @@ void Camera::mouseUpdate(float x, float y)
     yaw += curViewTarget.x - viewTarget.x;
 
     // constrains pitch
-    if (pitch > 89.0f)
-        pitch = 89.0f;
-    if (pitch < -89.0f)
-        pitch = -89.0f;
+    if (pitch > 90.0f)
+        pitch = 90.0f;
+    if (pitch < -90.0f)
+        pitch = -90.0f;
 
     updateCameraNormals();
 }

@@ -1,24 +1,27 @@
 #pragma once
 
-#include "Object.h"
+#include "core/SimpleObject.h"
+#include "draw/shader/SimpleShader.h"
 #include "mesh/factory/Pyramid.h"
 
-class Pyramid : public Object
+class Pyramid : public SimpleObject
 {
 public:
     Pyramid()
     {
         useMesh(MeshFactory::Pyramid());
-        std::cout << "creating pyramid\n";
+        createVerticesColorFromPos();
+        auto color = Colors::OCEAN;
+        color.a = 0.0f;
+        addColor(color);
     }
     ~Pyramid() {}
-
-    void print()
+    void onCreate() override
     {
-        std::cout << "wassup\n";
+        pos = unit::vec3(0, 0, -5);
+        scale = 5.0f;
     }
-
-    void create() override {}
-    void update() override {}
-    void draw() override {}
+    void onUpdate() override
+    {
+    }
 };

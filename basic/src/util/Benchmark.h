@@ -34,7 +34,7 @@ private:
     {
         file.open(filepath);
         if (!file)
-            std::cout << "File is not created!\n";
+            std::cout << "Benchmark file is not created!\n";
         file << "{\"otherData\":{},\"traceEvents\":[\n";
         // file.flush();
     }
@@ -68,7 +68,6 @@ public:
             file << ",\n";
         else
             isFirst = false;
-        // std::cout << file.is_open() << std::endl;
         file << "{\"cat\":\"" << category << "\","
              << "\"dur\":" << response.elapsed_time << ","
              << "\"pid\":0,"

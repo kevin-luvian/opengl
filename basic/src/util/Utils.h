@@ -32,7 +32,7 @@ namespace util
 
     static float clamp(float val, float min, float max)
     {
-        return std::max(std::min(val, min), max);
+        return std::max(std::min(val, max), min);
     }
 
     static float min(float a, float b)

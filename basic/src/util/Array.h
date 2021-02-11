@@ -73,9 +73,8 @@ struct Array
         std::copy(&data[0], &data[0] + size, &res[0]);
         return res;
     }
-    size_t byte_size() { return size * type_size(); }
-    size_t type_count() { return byte_size() / type_size(); }
-    std::size_t type_size() { return sizeof(T); }
+    size_t byte_size() const { return size * type_size(); }
+    size_t type_size() const { return sizeof(T); }
 
     T operator[](int i) const { return data[i]; }
     T &operator[](int i) { return data[i]; }

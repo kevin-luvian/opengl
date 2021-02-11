@@ -5,7 +5,13 @@ namespace unit
     struct vec2
     {
         float x, y;
-        vec2(float val) { x = y = val; }
+        vec2(float val) : x(val), y(val) {}
+        vec2(float x_, float y_) : x(x_), y(y_) {}
+        friend std::ostream &operator<<(std::ostream &out, const vec2 &v)
+        {
+            out << "x:" << v.x << ", y:" << v.y;
+            return out;
+        }
     };
     struct vec3
     {
@@ -20,6 +26,7 @@ namespace unit
             z *= val;
             return *this;
         }
+        glm::vec3 toGLMVec3() { return glm::vec3(x, y, z); }
         float iLength() { return util::fisqrt(x * x + y * y + z * z); }
         void normalize() { scale(iLength()); }
         vec3 &add(const vec3 &other)
@@ -46,9 +53,11 @@ namespace unit
             vec3 res = *this;
             return res.add(other);
         }
-        vec3 &operator+=(const vec3 &other)
+        vec3 &operator+=(const vec3 &other) { return add(other); }
+        friend std::ostream &operator<<(std::ostream &out, const vec3 &v)
         {
-            return add(other);
+            out << "x:" << v.x << ", y:" << v.y << ", z:" << v.z;
+            return out;
         }
     };
     struct vec4

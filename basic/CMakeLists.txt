@@ -10,7 +10,9 @@ set(LIB_DIRECTORY lib/)
 set(SOURCE_FILES
     src/main.cpp
     src/glComponent/Camera.cpp
-    src/glComponent/Screen.cpp)
+    src/glComponent/Screen.cpp
+    src/draw/render/Renderable.cpp
+    src/draw/shader/core/Shader.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

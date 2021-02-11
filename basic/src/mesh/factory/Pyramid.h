@@ -7,11 +7,11 @@ namespace MeshFactory
     static Mesh Pyramid()
     {
         const Vertex sVertices[5] = {
-            {unit::vec3(0.0f, 1.0f, 0.0f)},
-            {unit::vec3(-1.0f, -1.0f, 1.0f)},
-            {unit::vec3(1.0f, -1.0f, 1.0f)},
-            {unit::vec3(1.0f, -1.0f, -1.0f)},
-            {unit::vec3(-1.0f, -1.0f, -1.0f)}};
+            {unit::vec3(0.0f, 1.0f, 0.0f), unit::vec2(0.5f, 1.0f)},
+            {unit::vec3(-1.0f, -1.0f, 1.0f), unit::vec2(0.0f)},
+            {unit::vec3(1.0f, -1.0f, 1.0f), unit::vec2(0.33f, 0.5f)},
+            {unit::vec3(1.0f, -1.0f, -1.0f), unit::vec2(0.66f, 0.5f)},
+            {unit::vec3(-1.0f, -1.0f, -1.0f), unit::vec2(1.0f, 0.0f)}};
 
         const Indice sIndices[6] = {
             {0, 1, 2},
@@ -27,4 +27,4 @@ namespace MeshFactory
         mesh.calculateOriginNormals();
         return mesh;
     }
-};
+}; // namespace MeshFactory
