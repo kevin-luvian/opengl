@@ -1,33 +1,20 @@
 #pragma once
 
 #include "Object.h"
+#include "draw/render/SimpleRenderable.h"
 
-class SimpleObject : public Object
+class SimpleObject : public Object, private SimpleRenderable
 {
+private:
+    typedef SimpleRenderable renderer;
+
 protected:
     SimpleObject() {}
     virtual ~SimpleObject() {}
 
     ShaderType mShaderType() override { return ShaderType::Simple; };
     void bindShader(Shader *shader) const override { shader->setMat4(GLSLI::VMODEL, model); }
-    void bindAttrib() const override
-    {
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-    }
-    void unbindAttrib() const override
-    {
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
-    }
-    void createAttrib() override
-    {
-        // define vertex attributes
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, pos));
-        glEnableVertexAttribArray(0);
-
-        // define colour attributes
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, color));
-        glEnableVertexAttribArray(1);
-    }
+    void bindAttrib() const override { renderer::bindAttrib(); }
+    void unbindAttrib() const override { renderer::unbindAttrib(); }
+    void createAttrib() override { renderer::createAttrib(); }
 };

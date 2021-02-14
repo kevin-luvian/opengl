@@ -6,21 +6,18 @@
 class PyramidTEmpty : public TexturedObject
 {
 public:
-    PyramidTEmpty() {}
+    PyramidTEmpty() { std::cout << "creating PTE\n"; }
     ~PyramidTEmpty() {}
     void onCreate() override
     {
         std::cout << "creating PT\n";
         transferMesh(MeshFactory::Pyramid());
-        createVerticesColorFromPos();
         auto color = Colors::OCEAN;
         color.a = 0.0f;
         addColor(color);
-        // texture = TextureFactory::Mirrored("../res/texture/GoldMetal.jpg");
+        texture = TextureFactory::Empty();
 
-        // printVertices();
-
-        pos = unit::vec3(14.14f, 0, -5);
+        pos = unit::vec3(-14.14f, 0, -5);
         scale = 5.0f;
     }
     void onUpdate() override

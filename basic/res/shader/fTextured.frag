@@ -9,7 +9,5 @@ uniform sampler2D texData;
 
 void main()
 {
-	fColour = colour * texture(texData, texCoord);
 	fColour = texture(texData, texCoord);
-	//fColour = colour;
 }

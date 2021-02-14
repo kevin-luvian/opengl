@@ -6,6 +6,7 @@ struct Texture
 {
     unsigned int id;
     std::string type;
+    std::string path;
 
     void bindDefault() const
     {
@@ -39,30 +40,59 @@ struct Texture
 
 namespace TextureFactory
 {
-    static Texture Mirrored(const std::string &path)
+    struct texdata
     {
-        Texture texture;
-        int width, height, bitDepth;
-        auto *texData = stbi_load(path.c_str(), &width, &height, &bitDepth, 0);
-        // std::cout << "load file: " << path
-        //           << "\n width: " << width
-        //           << "\n height: " << height
-        //           << std::endl;
-        if (!texData)
-            std::cout << "failed to load file: " << path << std::endl;
-
-        glGenTextures(1, &texture.id);
-        glBindTexture(GL_TEXTURE_2D, texture.id);
+        unsigned char *data;
+        int width, height;
+        ~texdata() { free(data); }
+        int size() const { return width * height * 4; }
+    };
+    static void GenerateTexture(unsigned int &id, texdata &tData)
+    {
+        glGenTextures(1, &id);
+        glBindTexture(GL_TEXTURE_2D, id);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texData);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tData.width, tData.height, 0, GL_RGB, GL_UNSIGNED_BYTE, tData.data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glBindTexture(GL_TEXTURE_2D, 0);
-        stbi_image_free(texData);
+    }
+    static Texture FromFile(const std::string &path)
+    {
+        Texture texture;
+        texture.path = path;
+
+        texdata tData;
+        int bitDepth;
+        tData.data = stbi_load(path.c_str(), &tData.width, &tData.height, &bitDepth, 0);
+        // std::cout << "load file: " << path
+        //           << "\n width: " << width
+        //           << "\n height: " << height
+        //           << std::endl;
+        if (!tData.data)
+            std::cout << "failed to load file: " << path << std::endl;
+        GenerateTexture(texture.id, tData);
+        return texture;
+    }
+
+    static Texture Empty()
+    {
+        Texture texture;
+        texture.path = "";
+
+        texdata tData;
+        tData.height = 2;
+        tData.width = 2;
+        tData.data = new unsigned char[tData.size()];
+        for (int i = 0; i < tData.size(); i++)
+        {
+            tData.data[i] = 255;
+        }
+        GenerateTexture(texture.id, tData);
         return texture;
     }
 }; // namespace TextureFactory

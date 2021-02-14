@@ -15,10 +15,7 @@ protected:
     ShaderType shaderType;
 
     virtual ~Renderable() {}
-    Renderable()
-    {
-        VAO = VBO = IBO = ISize = 0;
-    }
+    Renderable() : VAO(0), VBO(0), IBO(0), ISize(0) {}
     virtual void bindAttrib() const = 0;
     virtual void unbindAttrib() const = 0;
     virtual void createAttrib() = 0;

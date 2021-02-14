@@ -6,17 +6,19 @@
 class PyramidT : public TexturedObject
 {
 public:
-    PyramidT() {}
-    ~PyramidT() {}
-    void onCreate() override
+    PyramidT()
     {
-        std::cout << "creating PT\n";
         transferMesh(MeshFactory::Pyramid());
         createVerticesColorFromPos();
         auto color = Colors::OCEAN;
         color.a = 0.0f;
         addColor(color);
-        texture = TextureFactory::Mirrored("../res/texture/GoldMetal.jpg");
+    }
+    ~PyramidT() {}
+    void onCreate() override
+    {
+        std::cout << "creating PT\n";
+        texture = TextureFactory::FromFile("../res/texture/GoldMetal.jpg");
 
         // printVertices();
 

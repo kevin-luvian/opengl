@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include "model/HModel.h"
 #include "object/HObject.h"
 #include "draw/shader/ShaderManager.h"
 
@@ -16,6 +17,10 @@ public:
         {
             obj->create();
         }
+        for (Model *model : models)
+        {
+            model->create();
+        }
     }
     void play()
     {
@@ -25,17 +30,29 @@ public:
         {
             obj->update();
         }
+        for (Model *model : models)
+        {
+            model->update();
+        }
+
         onPlay();
+
         for (Object *obj : objects)
         {
             shader = sManager.bind(obj->getShaderType());
             obj->render(shader);
         }
+        shader = sManager.bind(Model::getShaderType());
+        for (Model *model : models)
+        {
+            model->render(shader);
+        }
     }
 
 protected:
     ShaderManager sManager;
-    std::vector<Object *> objects; // vector handles heap. is safe.
+    std::vector<Object *> objects;
+    std::vector<Model *> models;
 
     Scene() { std::cout << "creating Scene\n"; }
     virtual ~Scene() {}
@@ -43,6 +60,7 @@ protected:
     virtual void onPrepare() = 0;
     virtual void onPlay() = 0;
 
+    void addModel(Model *model) { models.push_back(model); }
     void addObject(Object *obj) { objects.push_back(obj); }
     void sortObjectsByShaderType()
     {

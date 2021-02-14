@@ -6,3 +6,4 @@
 
 #include "Pyramid.h"
 #include "PyramidT.h"
+#include "PyramidTEmpty.h"

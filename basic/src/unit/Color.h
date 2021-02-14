@@ -7,6 +7,7 @@ namespace unit
         float r, g, b, a;
 
         color(float r_, float g_, float b_, float a_) : r(r_), g(g_), b(b_), a(a_) {}
+        color(unit::vec4 v) : r(v.x), g(v.y), b(v.z), a(v.w) {}
         glm::vec4 toGLMVec4() const { return glm::vec4(r, g, b, a); }
         unit::vec4 toVec4() const { return unit::vec4(r, g, b, a); }
         color &add(const color &other)

@@ -1,9 +1,13 @@
 #pragma once
 
+#include "draw/render/TexturedRenderable.h"
 #include "Object.h"
 
-class TexturedObject : public Object
+class TexturedObject : public Object, private TexturedRenderable
 {
+private:
+    typedef TexturedRenderable renderer;
+
 protected:
     TexturedObject() {}
     virtual ~TexturedObject() {}
@@ -14,30 +18,7 @@ protected:
         shader->setMat4(GLSLI::VMODEL, model);
         texture.bindDefault();
     };
-    void bindAttrib() const override
-    {
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-        glEnableVertexAttribArray(2);
-    }
-    void unbindAttrib() const override
-    {
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
-        glDisableVertexAttribArray(2);
-    }
-    void createAttrib() override
-    {
-        // define vertex attributes
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, pos));
-        glEnableVertexAttribArray(0);
-
-        // define colour attributes
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, color));
-        glEnableVertexAttribArray(1);
-
-        // define colour attributes
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texCoord));
-        glEnableVertexAttribArray(2);
-    }
+    void bindAttrib() const override { renderer::bindAttrib(); }
+    void unbindAttrib() const override { renderer::unbindAttrib(); }
+    void createAttrib() override { renderer::createAttrib(); }
 };
