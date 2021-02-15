@@ -8,6 +8,7 @@ struct Array
 
     Array<T>() { size = 0; }
     Array<T>(size_t size_) { make_empty(size_); }
+    Array<T>(const Array<T> &arr) { make_from(arr); }
     T *get() const { return data.get(); }
     void make_empty(size_t size_)
     {
@@ -34,6 +35,15 @@ struct Array
         std::copy(&data[0], &data[0] + size, vData.begin());
         return vData;
     }
+    void append(const Array<T> &other)
+    {
+        // Array<T> temp = copy();
+        // make_empty(temp.size + other.size);                                       // create new array container
+        // std::copy(&temp.data[0], &temp.data[0] + temp.size, &data[0]);            // copy current data
+        size_t currentSize = size;
+        resize(size + other.size);                                                  // resize array to fit other
+        std::copy(&other.data[0], &other.data[0] + other.size, &data[currentSize]); // copy new data
+    }
     void release() { data.release(); }
     void transfer(Array<T> &other)
     {
@@ -43,23 +53,29 @@ struct Array
     void resize(size_t size_)
     {
         size_t minSize = std::min(size, size_);
-        Array<T> temp = copy();
+        Array<T> temp = *this;
         make_empty(size_);
         std::copy(&temp.data[0], &temp.data[0] + minSize, &data[0]);
     }
-    void print()
+    void print(unsigned int limit)
     {
+        std::cout << "Array(\n";
         for (int i = 0; i < size; i++)
         {
-            std::cout << "(Array) [" << i << "]:" << data[i] << "\n";
+            std::cout << "[" << i << "]:" << data[i] << ", ";
+            if (limit == (i + 1))
+                std::cout << "\n";
         }
-        std::cout << std::endl;
+        std::cout << ")\n";
+    }
+    void copy_to(T *p) const
+    {
     }
     Array<T> copy() const
     {
-        Array<T> res(size);
-        std::copy(&data[0], &data[0] + size, &res[0]);
-        return res;
+        Array<T> arr;
+        arr.make_from(*this);
+        return arr;
     }
     size_t byte_size() const { return size * type_size(); }
     size_t type_size() const { return sizeof(T); }
@@ -71,6 +87,5 @@ struct Array
     {
         if (this != &other) // not a self-assignment
             make_from(other);
-        // return *this;
     }
 };

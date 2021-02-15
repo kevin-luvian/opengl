@@ -20,10 +20,8 @@ public:
         std::cout << "creating PT\n";
         texture = TextureFactory::FromFile("../res/texture/GoldMetal.jpg");
 
-        // printVertices();
-
-        pos = unit::vec3(14.14f, 0, -5);
-        scale = 5.0f;
+        setPosition(unit::vec3(14.14f, 0, -5));
+        setScale(5.0f);
     }
     void onUpdate() override
     {

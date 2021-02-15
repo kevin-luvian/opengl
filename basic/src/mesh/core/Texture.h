@@ -45,7 +45,7 @@ namespace TextureFactory
         unsigned char *data;
         int width, height;
         ~texdata() { free(data); }
-        int size() const { return width * height * 4; }
+        int size() const { return width * height * 3; }
     };
     static void GenerateTexture(unsigned int &id, texdata &tData)
     {
@@ -56,7 +56,7 @@ namespace TextureFactory
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tData.width, tData.height, 0, GL_RGB, GL_UNSIGNED_BYTE, tData.data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tData.width, tData.height, 0, GL_RGB, GL_UNSIGNED_BYTE, tData.data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -79,20 +79,23 @@ namespace TextureFactory
         return texture;
     }
 
-    static Texture Empty()
+    static Texture Empty(unit::color color)
     {
         Texture texture;
         texture.path = "";
 
         texdata tData;
-        tData.height = 2;
-        tData.width = 2;
+        tData.height = 4;
+        tData.width = 4;
         tData.data = new unsigned char[tData.size()];
-        for (int i = 0; i < tData.size(); i++)
+        for (int i = 0; i < tData.size(); i += 3)
         {
-            tData.data[i] = 255;
+            tData.data[i] = color.r * 255;
+            tData.data[i + 1] = color.g * 255;
+            tData.data[i + 2] = color.b * 255;
         }
         GenerateTexture(texture.id, tData);
         return texture;
     }
+    static Texture Empty() { return Empty(Colors::WHITE); }
 }; // namespace TextureFactory

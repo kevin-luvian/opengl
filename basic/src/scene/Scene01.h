@@ -9,9 +9,10 @@ class Scene01 : public Scene
 {
 public:
     Pyramid *p = new Pyramid();
-    PyramidT *pt = new PyramidT();
-    PyramidTEmpty *pte = new PyramidTEmpty();
-    Model *car = new Model("../res/model/low_poly_car/CAR.blend");
+    std::unique_ptr<PyramidT> pt = std::make_unique<PyramidT>();
+    std::unique_ptr<PyramidTEmpty> pte = std::make_unique<PyramidTEmpty>();
+    std::unique_ptr<Model> wood = std::make_unique<Model>("../res/model/wood/trunk wood.obj");
+    // std::unique_ptr<Model> alien = std::make_unique<Model>("../res/model/cottage/cottage_obj.obj");
 
     Scene01() { std::cout << "creating scene01\n"; }
     ~Scene01() { delete p; }
@@ -19,17 +20,22 @@ public:
     void onPrepare() override
     {
         addObject(p);
-        addObject(pt);
-        addObject(pte);
-        addModel(car);
-        car->setPosition({0, 10, -5});
+        addObject(pt.get());
+        addObject(pte.get());
+        addModel(wood.get());
+        // addModel(alien.get());
+        // alien->setPosition({7, 10, -5});
+        // alien->setScale(0.3f);
+        wood->setPosition({0, 10, -5});
+        wood->setScale(8.0f);
     }
     float rotation = 0.0f;
     void onPlay() override
     {
         rotation += 0.5f;
-        p->rotateX(-rotation);
-        pt->rotateX(rotation);
-        pte->rotateX(rotation);
+        p->rotateY(-rotation);
+        pt->rotateY(rotation);
+        pte->rotateY(rotation);
+        wood->rotateZ(rotation);
     }
 };

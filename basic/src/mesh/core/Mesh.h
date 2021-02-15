@@ -18,7 +18,7 @@ public:
         indices = obj.indices;
         texture = obj.texture;
     }
-    virtual ~Mesh() { texture.deleteTexture(); }
+    virtual ~Mesh() {}
     void transferMesh(Mesh obj)
     {
         vertices.transfer(obj.vertices);

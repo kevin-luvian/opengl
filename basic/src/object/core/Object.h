@@ -1,25 +1,21 @@
 #pragma once
 
 #include "glComponent/ScreenState.h"
+#include "draw/entity/Movable.h"
 #include "draw/shader/core/Shader.h"
 #include "draw/shader/core/ShaderType.h"
 #include "draw/render/Renderable.h"
 #include "mesh/core/Mesh.h"
 
-class Object : public Renderable, public Mesh
+class Object : public Renderable, public Mesh, public Movable
 {
 private:
     typedef Renderable renderable;
+    typedef Movable movable;
 
 public:
-    glm::mat4 model;
-    unit::vec3 pos;
-    float scale;
-
     void create()
     {
-        pos = unit::vec3(0.0f);
-        scale = 1.0f;
         shaderType = mShaderType();
         onCreate();
         update();
@@ -27,8 +23,7 @@ public:
     };
     void update()
     {
-        model = glm::translate(glm::mat4(1), pos.toGLMVec3());
-        model = glm::scale(model, glm::vec3(scale, scale, scale));
+        movable::move();
         onUpdate();
     }
     ShaderType getShaderType() const { return shaderType; }
@@ -36,11 +31,6 @@ public:
     {
         bindShader(shader);
         renderable::render();
-    }
-    void rotateX(float rotation)
-    {
-        float angle = util::toRadians(rotation);
-        model = glm::rotate(model, angle, glm::vec3(0, 1, 0));
     }
 
 protected:

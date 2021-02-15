@@ -14,6 +14,7 @@ void Renderable::onRender() const
         glDrawElements(GL_LINES, ISize, GL_UNSIGNED_INT, 0); // draw wireframe
     else
         glDrawElements(GL_TRIANGLES, ISize, GL_UNSIGNED_INT, 0); // draw full
+    // std::cout << "isize: " << ISize << "\n";
 };
 void Renderable::bind() const
 {

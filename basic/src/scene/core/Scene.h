@@ -25,7 +25,6 @@ public:
     void play()
     {
         sManager.reset();
-        Shader *shader;
         for (Object *obj : objects)
         {
             obj->update();
@@ -37,14 +36,15 @@ public:
 
         onPlay();
 
+        Shader *shader;
         for (Object *obj : objects)
         {
             shader = sManager.bind(obj->getShaderType());
             obj->render(shader);
         }
-        shader = sManager.bind(Model::getShaderType());
         for (Model *model : models)
         {
+            shader = sManager.bind(Model::getShaderType());
             model->render(shader);
         }
     }
