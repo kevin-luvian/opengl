@@ -1,14 +1,7 @@
 #include "Shader.h"
 
-void Shader::bind() const
-{
-    glUseProgram(programID);
-    // std::cout << "binding :: " << int(shaderType) << "\n";
-}
-void Shader::unbind() const
-{
-    glUseProgram(0);
-}
+void Shader::bind() const { glUseProgram(programID); }
+void Shader::unbind() const { glUseProgram(0); }
 void Shader::clear()
 {
     if (programID != 0)
@@ -61,7 +54,6 @@ void Shader::compileShader(const char *vCode, const char *fCode)
 void Shader::addShader(const char *shaderCode, GLenum shaderType) const
 {
     GLuint shaderID = glCreateShader(shaderType);
-
     GLint codeLength = strlen(shaderCode);
 
     glShaderSource(shaderID, 1, &shaderCode, &codeLength);
@@ -84,20 +76,17 @@ void Shader::addShader(const char *shaderCode, GLenum shaderType) const
 void Shader::readFile(const char *filepath, std::string &content) const
 {
     std::ifstream in_file{filepath};
-
     if (!in_file)
     {
         std::cout << "path: " << filepath << " file cant be read\n";
         return;
     }
-
     std::string line;
     while (!in_file.eof())
     {
         std::getline(in_file, line);
         content.append(line + "\n");
     }
-
     in_file.close();
 }
 unsigned int Shader::getUniformLocation(const std::string &name)
@@ -112,4 +101,8 @@ unsigned int Shader::getUniformLocation(const std::string &name)
 void Shader::setMat4(const std::string &name, const glm::mat4 &mat)
 {
     glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(mat));
+}
+void Shader::set1i(const std::string &name, const int &i)
+{
+    glUniform1i(getUniformLocation(name), i);
 }

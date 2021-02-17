@@ -6,8 +6,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "mesh/core/TextureLookup.h"
 #include "draw/entity/Movable.h"
-#include "draw/shader/core/GLSLInterface.h"
 #include "draw/shader/core/ShaderType.h"
 #include "mesh/core/Texture.h"
 #include "ModelObject.h"
@@ -15,19 +15,8 @@
 class Model : public Movable
 {
 public:
-    Model(const std::string &path) : filepath(path) {}
-    ~Model() { clear(); }
-
-    void clear()
-    {
-        for (size_t i = 0; i < mObjects.size; i++)
-        {
-            mObjects[i].release();
-        }
-        mObjects.release();
-        filepath.clear();
-        directory.clear();
-    }
+    Model(const std::string &path, bool flip = false) : filepath(path), flipTexture(flip) {}
+    ~Model() {}
 
     void create();
     void update();
@@ -35,16 +24,17 @@ public:
     static ShaderType getShaderType() { return ShaderType::Textured; }
 
 private:
+    TextureLookup tLookup;
     Array<ModelObject> mObjects;
     std::string filepath;
     std::string directory;
 
+    bool flipTexture;
+
     void loadModel(const std::string &path);
     void processNode(aiNode *node, const aiScene *scene);
-    // heap allocated. might cause memmory leaks
     ModelObject processMesh(aiMesh *mesh, const aiScene *scene);
-    Texture loadTexture(aiMaterial *mat, aiTextureType type, std::string typeName);
-    std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
+    Array<Texture> loadTextures(aiMaterial *mat, aiTextureType aiType, unsigned int texType);
 };
 
 void Model::create()
@@ -65,7 +55,7 @@ void Model::render(Shader *shader)
     shader->setMat4(GLSLI::VMODEL, model);
     for (size_t i = 0; i < mObjects.size; i++)
     {
-        mObjects[i].render();
+        mObjects[i].render(*shader);
     }
 }
 
@@ -82,13 +72,13 @@ void Model::loadModel(const std::string &path)
 
 void Model::processNode(aiNode *node, const aiScene *scene)
 {
-    Array<ModelObject> objects(scene->mNumMeshes);
-    // mObjects.make_empty(scene->mNumMeshes);
-    for (size_t i = 0; i < node->mNumMeshes; i++)
+    size_t offset = mObjects.size;
+    size_t mSize = node->mNumMeshes;
+    mObjects.resize(offset + mSize);
+    for (size_t i = 0; i < mSize; i++)
     {
-        objects[i] = processMesh(scene->mMeshes[node->mMeshes[i]], scene);
+        mObjects[offset + i] = processMesh(scene->mMeshes[node->mMeshes[i]], scene);
     }
-    mObjects.append(objects);
     for (size_t i = 0; i < node->mNumChildren; i++)
     {
         processNode(node->mChildren[i], scene);
@@ -102,24 +92,18 @@ ModelObject Model::processMesh(aiMesh *mesh, const aiScene *scene)
     mObj.vertices.make_empty(mesh->mNumVertices);
     for (size_t i = 0; i < mesh->mNumVertices; i++)
     {
-        vertex.pos = unit::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+        vertex.pos = mesh->mVertices[i];
 
         if (mesh->mNormals)
-            vertex.normal = unit::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+            vertex.normal = mesh->mNormals[i];
 
         if (mesh->mTextureCoords[0])
             vertex.texCoord = unit::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 
         if (mesh->mColors[0])
-            vertex.color = unit::color(mesh->mColors[0][i].r,
-                                       mesh->mColors[0][i].g,
-                                       mesh->mColors[0][i].b,
-                                       mesh->mColors[0][i].a);
-        else
-            vertex.color = Colors::OCEAN;
+            vertex.color = mesh->mColors[0][i];
+
         mObj.vertices[i] = vertex;
-        // if (i == 0)
-        //     std::cout << "Vertex::" << vertex << "\n";
     }
 
     Indice indice;
@@ -128,59 +112,33 @@ ModelObject Model::processMesh(aiMesh *mesh, const aiScene *scene)
     {
         // potentially might break; probably not.
         if (mesh->mFaces[i].mNumIndices == 3)
-        {
-            indice.left = mesh->mFaces[i].mIndices[0];
-            indice.right = mesh->mFaces[i].mIndices[1];
-            indice.top = mesh->mFaces[i].mIndices[2];
-            mObj.indices[i] = indice;
-        }
+            mObj.indices[i] = mesh->mFaces[i].mIndices;
     }
     if (mesh->mMaterialIndex >= 0)
     {
         aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-        mObj.texture = loadTexture(material, aiTextureType_DIFFUSE, "texture_diffuse");
+        mObj.textures.append(loadTextures(material, aiTextureType_DIFFUSE, GLSLI::Texture::DIFFUSE));
+        mObj.textures.append(loadTextures(material, aiTextureType_SPECULAR, GLSLI::Texture::SPECULAR));
     }
 
     return mObj;
 }
 
-Texture Model::loadTexture(aiMaterial *mat, aiTextureType type, std::string typeName)
+Array<Texture> Model::loadTextures(aiMaterial *mat, aiTextureType aiType, unsigned int texType)
 {
-    Texture tex;
-    unsigned int count = mat->GetTextureCount(type);
-    if (count >= 0)
-    {
-        aiString path;
-        if (mat->GetTexture(type, 0, &path) == aiReturn_SUCCESS)
-        {
-            std::string filepath = directory + "/" + path.data;
-            tex = TextureFactory::FromFile(filepath);
-            tex.type = typeName;
-        }
-        else
-        {
-            tex = TextureFactory::Empty(Colors::OCEAN);
-        }
-        std::cout << "Texture path: " << path.C_Str() << "\n";
-    }
-    return tex;
-}
-
-std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)
-{
-    unsigned int size = mat->GetTextureCount(type);
-    std::vector<Texture> textures(size);
-    Texture texture;
+    unsigned int size = mat->GetTextureCount(aiType);
+    Array<Texture> textures(size);
     for (unsigned int i = 0; i < size; i++)
     {
-        aiString str;
-        mat->GetTexture(type, i, &str);
-        std::stringstream filepath;
-        filepath << directory << "/" << str.C_Str();
-
-        texture = TextureFactory::FromFile(filepath.str());
-        texture.type = typeName;
-        textures.push_back(texture);
+        aiString path;
+        if (mat->GetTexture(aiType, i, &path) == aiReturn_SUCCESS)
+        {
+            std::string filepath = directory + "/" + path.C_Str();
+            textures[i] = tLookup.texture(filepath, texType, flipTexture);
+        }
+        else
+            textures[i] = tLookup.empty(Colors::WHITE, texType);
     }
+    // std::cout << "tex size: " << textures.size << "\n";
     return textures;
 }

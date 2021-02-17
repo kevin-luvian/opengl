@@ -1,6 +1,5 @@
 #pragma once
 
-#include "core/GLSLInterface.h"
 #include "core/Shader.h"
 #include "core/ShaderType.h"
 

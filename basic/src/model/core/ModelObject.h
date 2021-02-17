@@ -15,11 +15,9 @@ public:
     ~ModelObject() {}
 
     ShaderType getShaderType() const { return ShaderType::Textured; }
-    void release() { texture.deleteTexture(); }
     void create() { renderer::createBuffer(*this); }
-    void render()
+    void render(Shader &shader)
     {
-        texture.bindDefault();
-        renderer::render();
+        renderer::render(shader, textures);
     }
 };

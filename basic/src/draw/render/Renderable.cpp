@@ -11,7 +11,7 @@ void Renderable::onRender() const
     bool *keys = ScreenState::KeyState();
     glPointSize(1.0f);
     if (keys[GLFW_KEY_TAB])
-        glDrawElements(GL_LINES, ISize, GL_UNSIGNED_INT, 0); // draw wireframe
+        glDrawElements(GL_LINE_STRIP, ISize, GL_UNSIGNED_INT, 0); // draw wireframe
     else
         glDrawElements(GL_TRIANGLES, ISize, GL_UNSIGNED_INT, 0); // draw full
     // std::cout << "isize: " << ISize << "\n";

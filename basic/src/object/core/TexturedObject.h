@@ -10,11 +10,7 @@ private:
 
 protected:
     TexturedObject() {}
-    virtual ~TexturedObject()
-    {
-        std::cout << "textured obj deleted\n";
-        texture.deleteTexture();
-    }
+    virtual ~TexturedObject() { texture.deleteTexture(); }
 
     ShaderType mShaderType() override { return ShaderType::Textured; };
     void bindShader(Shader *shader) const override

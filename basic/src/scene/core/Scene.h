@@ -61,7 +61,9 @@ protected:
     virtual void onPlay() = 0;
 
     void addModel(Model *model) { models.push_back(model); }
+    void addModel(const std::unique_ptr<Model> &model) { models.push_back(model.get()); }
     void addObject(Object *obj) { objects.push_back(obj); }
+    void addObject(const std::unique_ptr<Object> &obj) { objects.push_back(obj.get()); }
     void sortObjectsByShaderType()
     {
         std::sort(objects.begin(), objects.end(), Object::ShaderTypeComparer);

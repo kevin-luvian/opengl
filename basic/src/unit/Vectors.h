@@ -1,5 +1,7 @@
 #pragma once
 
+#include <assimp/mesh.h>
+
 namespace unit
 {
     struct vec2
@@ -21,30 +23,26 @@ namespace unit
         vec3() : x(0.0f), y(0.0f), z(0.0f) {}
         vec3(float val) { x = y = z = val; }
         vec3(float x_, float y_, float z_) : x(x_), y(y_), z(z_) {}
+        vec3(const aiVector3D &v) : x(v.x), y(v.y), z(v.z) {}
         glm::vec3 toGLMVec3() { return glm::vec3(x, y, z); }
         float iLength() { return util::fisqrt(x * x + y * y + z * z); }
-        void normalize() { scale(iLength()); }
-        void scale(const float &val)
-        {
-            x *= val;
-            y *= val;
-            z *= val;
-        }
+        void normalize() { *this *= iLength(); }
         vec3 operator-() const { return {-x, -y, -z}; }
-        vec3 operator-(const vec3 &other) const
-        {
-            return {x - other.x, y - other.y, z - other.z};
-        }
+        vec3 operator-(const vec3 &other) const { return {x - other.x, y - other.y, z - other.z}; }
         void operator-=(const vec3 &other) { *this += -other; }
-        vec3 operator+(const vec3 &other) const
-        {
-            return {x + other.x, y + other.y, z + other.z};
-        }
+        vec3 operator+(const vec3 &other) const { return {x + other.x, y + other.y, z + other.z}; }
         void operator+=(const vec3 &other)
         {
             x += other.x;
             y += other.y;
             z += other.z;
+        }
+        vec3 operator*(const float &val) const { return {x * val, y * val, z * val}; }
+        void operator*=(const float &val)
+        {
+            x *= val;
+            y *= val;
+            z *= val;
         }
         friend std::ostream &operator<<(std::ostream &out, const vec3 &v)
         {

@@ -5,7 +5,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "glComponent/Camera.h"
-#include "GLSLInterface.h"
 #include "ShaderType.h"
 
 class Shader
@@ -45,6 +44,7 @@ public:
     void bind() const;
     void unbind() const;
     void setMat4(const std::string &name, const glm::mat4 &mat);
+    void set1i(const std::string &name, const int &i);
     virtual void compile() { shaderType = mShaderType(); };
     virtual void attachCamera()
     {

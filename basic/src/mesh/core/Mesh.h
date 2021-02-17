@@ -9,6 +9,7 @@ class Mesh
 public:
     Array<Vertex> vertices;
     Array<Indice> indices;
+    Array<Texture> textures;
     Texture texture;
 
     Mesh() {}
@@ -24,7 +25,6 @@ public:
         vertices.transfer(obj.vertices);
         indices.transfer(obj.indices);
         texture = std::move(obj.texture);
-        obj.texture.clear();
     }
     void addColor(unit::color col)
     {

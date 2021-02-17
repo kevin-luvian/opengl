@@ -17,3 +17,4 @@
 #include "util/Array.h"
 #include "unit/Vectors.h"
 #include "unit/Color.h"
+#include "glComponent/GLSLInterface.h"
