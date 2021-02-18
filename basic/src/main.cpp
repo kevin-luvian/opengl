@@ -3,18 +3,18 @@
 #include "glComponent/Screen.h"
 #include "scene/HScene.h"
 
-Scene01 scene01;
+Scene02 scene02;
 
 void onCreate()
 {
     BENCHMARK_PROFILE();
-    scene01.prepare();
+    scene02.prepare();
 }
 
 void onDraw()
 {
     BENCHMARK_PROFILE();
-    scene01.play();
+    scene02.play();
 }
 
 int main(int, char **)

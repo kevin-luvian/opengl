@@ -10,21 +10,27 @@ public:
     Array<Vertex> vertices;
     Array<Indice> indices;
     Array<Texture> textures;
-    Texture texture;
 
     Mesh() {}
     Mesh(const Mesh &obj)
     {
         vertices = obj.vertices;
         indices = obj.indices;
-        texture = obj.texture;
+        textures = obj.textures;
     }
     virtual ~Mesh() {}
     void transferMesh(Mesh obj)
     {
         vertices.transfer(obj.vertices);
         indices.transfer(obj.indices);
-        texture = std::move(obj.texture);
+        textures.transfer(obj.textures);
+    }
+    void deleteTextures() const
+    {
+        for (size_t i = 0; i < textures.size; i++)
+        {
+            textures[i].deleteTexture();
+        }
     }
     void addColor(unit::color col)
     {

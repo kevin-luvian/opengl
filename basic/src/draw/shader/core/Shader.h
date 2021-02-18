@@ -12,7 +12,7 @@ class Shader
 private:
     std::unordered_map<std::string, unsigned int> ulookup;
 
-    unsigned int getUniformLocation(const std::string &name);
+    unsigned int getUniformLocation(std::string name);
 
     // add shader to opengl state
     void addShader(const char *shaderCode, GLenum shaderType) const;
@@ -43,8 +43,12 @@ public:
     void clear();
     void bind() const;
     void unbind() const;
-    void setMat4(const std::string &name, const glm::mat4 &mat);
-    void set1i(const std::string &name, const int &i);
+    void setMat4(std::string name, const glm::mat4 &mat);
+    void set1i(std::string name, int i);
+    void set1f(std::string name, float f);
+    void set3f(std::string name, unit::color c);
+    void set3f(std::string name, unit::vec3 v);
+    void set3f(std::string name, float x, float y, float z);
     virtual void compile() { shaderType = mShaderType(); };
     virtual void attachCamera()
     {

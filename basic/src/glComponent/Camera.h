@@ -47,4 +47,5 @@ public:
     static glm::mat4 Projection() { return GET().projection; }
     static glm::mat4 ViewProjection() { return GET().viewProjection; }
     static glm::vec3 Position() { return GET().pos; }
+    static unit::vec3 UnitPosition() { return unit::vec3(GET().pos); }
 };

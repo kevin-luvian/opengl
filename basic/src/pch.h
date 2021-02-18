@@ -15,6 +15,7 @@
 #include "util/Benchmark.h"
 #include "util/Utils.h"
 #include "util/Array.h"
+#include "util/MArray.h"
 #include "unit/Vectors.h"
 #include "unit/Color.h"
 #include "glComponent/GLSLInterface.h"

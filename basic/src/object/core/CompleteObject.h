@@ -1,18 +1,18 @@
 #pragma once
 
-#include "draw/render/TexturedRenderable.h"
 #include "Object.h"
+#include "draw/render/CompleteRenderable.h"
 
-class TexturedObject : public Object, private TexturedRenderable
+class CompleteObject : public Object, private CompleteRenderable
 {
 private:
-    typedef TexturedRenderable renderer;
+    typedef CompleteRenderable renderer;
 
 protected:
-    TexturedObject() {}
-    virtual ~TexturedObject() {}
+    CompleteObject() {}
+    virtual ~CompleteObject() {}
 
-    ShaderType mShaderType() override { return ShaderType::Textured; };
+    ShaderType mShaderType() override { return ShaderType::Light; };
     void bindShader(Shader *shader) const override
     {
         shader->setMat4(GLSLI::VMODEL, model);

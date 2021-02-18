@@ -7,6 +7,8 @@ class TextureLookup
 {
 private:
     std::unordered_map<std::string, Texture> lookup;
+    size_t references;
+
     Texture *find(std::string path)
     {
         std::unordered_map<std::string, Texture>::iterator it;
@@ -17,9 +19,18 @@ private:
     }
 
 public:
-    TextureLookup() {}
+    TextureLookup() { references = 1; }
     ~TextureLookup() { clean(); }
 
+    void incrementReference()
+    {
+        references++;
+    }
+    bool decrementReference()
+    {
+        references--;
+        return references <= 0;
+    }
     void clean()
     {
         std::unordered_map<std::string, Texture>::iterator it;
@@ -36,7 +47,10 @@ public:
     {
         Texture *it = find(path);
         if (it != nullptr)
+        {
+            it->ref_counter++;
             return *it;
+        }
 
         Texture tex = TextureFactory::FromFile(path, flipTexture);
         tex.type = type;
@@ -47,7 +61,10 @@ public:
     {
         Texture *tex = find(col.hash());
         if (tex != nullptr)
+        {
+            tex->ref_counter++;
             return *tex;
+        }
 
         Texture emptyTex = TextureFactory::Empty(col);
         emptyTex.type = type;

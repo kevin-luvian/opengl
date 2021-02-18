@@ -41,6 +41,11 @@ struct Array
         copy_to(vData.begin());
         return vData;
     }
+    void append(const T &val)
+    {
+        resize(size + 1);
+        data[size - 1] = val;
+    }
     void append(const Array<T> &other)
     {
         size_t currentSize = size;

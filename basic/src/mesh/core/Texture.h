@@ -10,9 +10,10 @@ struct Texture
     unsigned int id;
     unsigned int type;
     std::string path;
+    size_t ref_counter;
 
-    Texture() {}
-    Texture(const std::string &_path) : path(_path) {}
+    Texture() : ref_counter(1) {}
+    Texture(const std::string &_path) : ref_counter(1), path(_path) {}
     void bindDefault() const { bind(0); }
     void bindCallback(const unsigned int &offset, const std::function<void()> &callback) const
     {

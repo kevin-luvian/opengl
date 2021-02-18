@@ -7,14 +7,14 @@ class PyramidTEmpty : public TexturedObject
 {
 public:
     PyramidTEmpty() { std::cout << "creating PTE\n"; }
-    ~PyramidTEmpty() {}
+    ~PyramidTEmpty() { deleteTextures(); }
     void onCreate() override
     {
         transferMesh(MeshFactory::Pyramid());
-        texture = TextureFactory::Empty();
-
-        setPosition(unit::vec3(-14.14f, 0, -5));
-        setScale(5.0f);
+        Texture tex = TextureFactory::Empty(Colors::OCEAN);
+        tex.type = GLSLI::Texture::DIFFUSE;
+        // Texture tex = TextureFactory::Empty_Texture();
+        textures.append(tex);
     }
     void onUpdate() override
     {

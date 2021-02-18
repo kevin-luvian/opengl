@@ -8,16 +8,18 @@ namespace unit
     {
         float r, g, b, a;
 
+        color() : color(0.0f) {}
+        color(float val) : r(val), g(val), b(val), a(val) {}
         color(float r_, float g_, float b_, float a_) : r(r_), g(g_), b(b_), a(a_) {}
         color(const unit::vec4 &v) : r(v.x), g(v.y), b(v.z), a(v.w) {}
         color(const aiColor4D &c) : r(c.r), g(c.g), b(c.b), a(c.a) {}
 
         std::string hash() const
         {
-            return std::to_string(int(r * 100)) +
-                   std::to_string(int(g * 100)) +
-                   std::to_string(int(b * 100)) +
-                   std::to_string(int(a * 100));
+            return std::to_string(int(r * 255)) +
+                   std::to_string(int(g * 255)) +
+                   std::to_string(int(b * 255)) +
+                   std::to_string(int(a * 255));
         }
         void clamp()
         {
@@ -31,7 +33,7 @@ namespace unit
         void operator-=(const color &o) { *this = *this - o; }
         color operator+(const color &o) const { return {r + o.r, g + o.g, b + o.b, a + o.a}; }
         void operator+=(const color &o) { *this = *this + o; }
-        void operator*=(const float &val)
+        void operator*=(float val)
         {
             r *= val;
             g *= val;

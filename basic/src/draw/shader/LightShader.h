@@ -16,9 +16,4 @@ public:
         compileFromFile("../res/shader/vLight.vert", "../res/shader/fLight.frag");
         instanced::compile();
     }
-    void attachCamera() override
-    {
-        setMat4(GLSLI::VVIEW, Camera::View());
-        setMat4(GLSLI::VPROJECTION, Camera::Projection());
-    }
 };

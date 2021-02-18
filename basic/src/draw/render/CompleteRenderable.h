@@ -4,14 +4,14 @@
 #include "draw/shader/core/Shader.h"
 #include "mesh/core/Texture.h"
 
-class TexturedRenderable : public Renderable
+class CompleteRenderable : public Renderable
 {
 private:
     typedef Renderable instanced;
 
 protected:
-    TexturedRenderable() {}
-    virtual ~TexturedRenderable() {}
+    CompleteRenderable() {}
+    virtual ~CompleteRenderable() {}
 
     void render(Shader &shader, const Array<Texture> &textures) const
     {
@@ -46,12 +46,14 @@ protected:
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
+        glEnableVertexAttribArray(3);
     }
     void unbindAttrib() const override
     {
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
+        glDisableVertexAttribArray(3);
     }
     void createAttrib() override
     {
@@ -66,5 +68,9 @@ protected:
         // define colour attributes
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texCoord));
         glEnableVertexAttribArray(2);
+
+        // define normal attributes
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
+        glEnableVertexAttribArray(3);
     }
 };

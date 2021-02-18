@@ -89,7 +89,7 @@ void Shader::readFile(const char *filepath, std::string &content) const
     }
     in_file.close();
 }
-unsigned int Shader::getUniformLocation(const std::string &name)
+unsigned int Shader::getUniformLocation(std::string name)
 {
     auto it = ulookup.find(name);
     if (it != ulookup.end())
@@ -98,11 +98,21 @@ unsigned int Shader::getUniformLocation(const std::string &name)
     ulookup.insert(std::make_pair(name, location));
     return location;
 }
-void Shader::setMat4(const std::string &name, const glm::mat4 &mat)
+void Shader::setMat4(std::string name, const glm::mat4 &mat)
 {
     glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(mat));
 }
-void Shader::set1i(const std::string &name, const int &i)
+void Shader::set1i(std::string name, int i)
 {
     glUniform1i(getUniformLocation(name), i);
+}
+void Shader::set1f(std::string name, float f)
+{
+    glUniform1f(getUniformLocation(name), f);
+}
+void Shader::set3f(std::string name, unit::color c) { set3f(name, c.r, c.g, c.b); }
+void Shader::set3f(std::string name, unit::vec3 v) { set3f(name, v.x, v.y, v.z); }
+void Shader::set3f(std::string name, float x, float y, float z)
+{
+    glUniform3f(getUniformLocation(name), x, y, z);
 }

@@ -6,7 +6,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "mesh/core/TextureLookup.h"
+#include "mesh/core/TextureManager.h"
 #include "draw/entity/Movable.h"
 #include "draw/shader/core/ShaderType.h"
 #include "mesh/core/Texture.h"
@@ -15,20 +15,39 @@
 class Model : public Movable
 {
 public:
-    Model(const std::string &path, bool flip = false) : filepath(path), flipTexture(flip) {}
-    ~Model() {}
+    Model() {}
+    Model(std::string path, bool flip = false) : filepath(path), flipTexture(flip)
+    {
+        tLookup = TextureManager::Create(path);
+    }
+    ~Model()
+    {
+        TextureManager::Remove(filepath);
+    }
 
     void create();
     void update();
     void render(Shader *shader);
-    static ShaderType getShaderType() { return ShaderType::Textured; }
+    void operator=(const Model &other)
+    {
+        if (this != &other) // not a self-assignment
+        {
+            tLookup = other.tLookup;
+            mObjects = other.mObjects;
+            filepath = other.filepath;
+            directory = other.directory;
+            flipTexture = other.flipTexture;
+            tLookup->incrementReference();
+        }
+    }
+
+    static const ShaderType SHADER_TYPE;
 
 private:
-    TextureLookup tLookup;
+    TextureLookup *tLookup;
     Array<ModelObject> mObjects;
-    std::string filepath;
+    std::string filepath; // should not change after initialization
     std::string directory;
-
     bool flipTexture;
 
     void loadModel(const std::string &path);
@@ -36,6 +55,8 @@ private:
     ModelObject processMesh(aiMesh *mesh, const aiScene *scene);
     Array<Texture> loadTextures(aiMaterial *mat, aiTextureType aiType, unsigned int texType);
 };
+
+const ShaderType Model::SHADER_TYPE = ShaderType::Light;
 
 void Model::create()
 {
@@ -134,10 +155,10 @@ Array<Texture> Model::loadTextures(aiMaterial *mat, aiTextureType aiType, unsign
         if (mat->GetTexture(aiType, i, &path) == aiReturn_SUCCESS)
         {
             std::string filepath = directory + "/" + path.C_Str();
-            textures[i] = tLookup.texture(filepath, texType, flipTexture);
+            textures[i] = tLookup->texture(filepath, texType, flipTexture);
         }
         else
-            textures[i] = tLookup.empty(Colors::WHITE, texType);
+            textures[i] = tLookup->empty(Colors::WHITE, texType);
     }
     // std::cout << "tex size: " << textures.size << "\n";
     return textures;

@@ -28,7 +28,7 @@ namespace GLSLI
     /* PointLight stuff */
     namespace PointLight
     {
-        static const unsigned int MAX = 4;
+        static const size_t MAX = 4;
         static const std::string COUNT = "pointLightCount";
         static const std::string ARRAY = "pLights";
         static std::string ATTENUATION(unsigned int index)
@@ -56,14 +56,14 @@ namespace GLSLI
     /* SpotLight stuff */
     namespace SpotLight
     {
-        static const unsigned int MAX = 3;
+        static const size_t MAX = 3;
         static const std::string COUNT = "spotLightCount";
         static const std::string ARRAY = "sLights";
         static std::string DIRECTION(unsigned int index)
         {
             return ARRAY + "[" + std::to_string(index) + "].direction";
         }
-        static std::string CUTTOFF(unsigned int index)
+        static std::string CUTOFF(unsigned int index)
         {
             return ARRAY + "[" + std::to_string(index) + "].cutoff";
         }

@@ -1,18 +1,19 @@
 #pragma once
 
-#include "core/TexturedObject.h"
+#include "core/CompleteObject.h"
 #include "mesh/factory/Pyramid.h"
 
-class PyramidT : public TexturedObject
+class PyramidTL : public CompleteObject
 {
 public:
-    PyramidT() { transferMesh(MeshFactory::Pyramid()); }
-    ~PyramidT() { deleteTextures(); }
-
+    PyramidTL() { std::cout << "creating PTE\n"; }
+    ~PyramidTL() { deleteTextures(); }
     void onCreate() override
     {
-        std::cout << "creating PT\n";
+        transferMesh(MeshFactory::Pyramid());
+
         Texture tex = TextureFactory::FromFile("../res/texture/GoldMetal.jpg");
+        // Texture tex = TextureFactory::Empty(Colors::OCEAN);
         tex.type = GLSLI::Texture::DIFFUSE;
         textures.append(tex);
     }

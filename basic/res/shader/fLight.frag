@@ -2,7 +2,8 @@
 
 in vec4 vColour;
 in vec3 vNormal;
-in vec3 fPosition;
+in vec2 vTexCoord;
+in vec3 vPosition;
 
 out vec4 colour;
 
@@ -53,6 +54,11 @@ uniform Material material;
 
 uniform vec3 cameraPosition;
 
+uniform sampler2D texture_diffuse0;
+uniform sampler2D texture_diffuse1;
+uniform sampler2D texture_specular0;
+uniform sampler2D texture_specular1;
+
 vec4 calcDirectionLight(Light light, vec3 direction)
 {
 	if(direction == vec3(0)) return vec4(0, 0, 0, 0);
@@ -70,7 +76,7 @@ vec4 calcDirectionLight(Light light, vec3 direction)
 	// specular light
 	vec3 specularColour = vec3(0, 0, 0);
 	if(diffuseFactor > 0.0f) {
-		vec3 vecCameraDir = normalize(cameraPosition - fPosition);
+		vec3 vecCameraDir = normalize(cameraPosition - vPosition);
 		vec3 vecReflectDir = reflect(-lightDirection, normal);
 		float specularFactor = pow(max(dot(vecCameraDir, vecReflectDir), 0.0), material.shininess) * diffuseFactor;
 		specularColour = light.colour * specularFactor * material.specularIntensity;
@@ -81,7 +87,7 @@ vec4 calcDirectionLight(Light light, vec3 direction)
 
 vec4 calcPointLight(PointLight light)
 {
-	vec3 direction = fPosition - light.position;
+	vec3 direction = vPosition - light.position;
 	float distance = length(direction);
 
 	vec4 colour = calcDirectionLight(light.base, direction);
@@ -113,7 +119,7 @@ vec4 calcSpotLights()
 	vec4 totalColour = vec4(0);
 	for(int i = 0; i < spotLightCount; i++)
 	{
-		vec3 lightDirection = normalize(fPosition - sLights[i].pointLight.position);
+		vec3 lightDirection = normalize(vPosition - sLights[i].pointLight.position);
 		float theta = dot(lightDirection, sLights[i].direction);
 		if(theta > sLights[i].cutoff) 
 		{
@@ -129,5 +135,11 @@ void main()
 	vec4 lightsColour = calcDirectionLight(dirLight.base, dirLight.direction);
 	lightsColour += calcPointLights();
 	lightsColour += calcSpotLights();
-	colour = vColour * lightsColour;
+
+	vec4 texColour = texture(texture_diffuse0, vTexCoord);
+	texColour *= texture(texture_diffuse1, vTexCoord);
+	texColour *= texture(texture_specular0, vTexCoord);
+	texColour *= texture(texture_specular1, vTexCoord);
+
+	colour = vColour * texColour * lightsColour;
 }
