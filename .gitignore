@@ -73,4 +73,5 @@ CMakeUserPresets.json
 
 # Build folder
 */build/*
+*/res/model/*
 */res/benchmark.json
