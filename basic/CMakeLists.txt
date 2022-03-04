@@ -6,6 +6,8 @@ enable_testing()
 
 set(PROJECT_DIRECTORY src/)
 set(LIB_DIRECTORY lib/)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
 set(SOURCE_FILES
     src/main.cpp
@@ -35,7 +37,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_link_libraries(${PROJECT_NAME}
                     ${OPENGL_LIBRARIES}
                     ${GLEW_LIBRARIES}
-                    glfw)
+                    glfw
+                    Threads::Threads)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
